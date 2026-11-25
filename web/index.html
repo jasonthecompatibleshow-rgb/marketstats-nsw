@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NSW Rent & Yield Heatmap</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<link rel="stylesheet" href="style.css">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/pmtiles@3.2.1/dist/pmtiles.js"></script>
+</head>
+<body>
+<div id="map"></div>
+<div id="controls" class="card">
+  <h1>NSW Rent &amp; Yield Heatmap</h1>
+  <div class="search">
+    <input id="q" placeholder="Search suburb or postcode…" autocomplete="off">
+    <ul id="results"></ul>
+  </div>
+  <label>Metric
+    <select id="metric">
+      <option value="rent">Median weekly rent (new bonds)</option>
+      <option value="yield">Gross rental yield</option>
+      <option value="price">Median sale price</option>
+      <option value="growth">Rent change, 12 months</option>
+      <option value="income">Median household income (Census 2021)</option>
+    </select>
+  </label>
+  <div class="row">
+    <label>Dwelling
+      <select id="dwelling">
+        <option value="A">All</option><option value="U">Unit/flat</option>
+        <option value="H">House</option><option value="T">Townhouse</option>
+      </select>
+    </label>
+    <label>Bedrooms
+      <select id="beds">
+        <option value="t">All</option><option value="1">1</option><option value="2">2</option>
+        <option value="3">3</option><option value="4">4+</option>
+      </select>
+    </label>
+  </div>
+  <div id="note" class="note"></div>
+  <div id="legend"></div>
+  <div class="foot" id="foot"></div>
+</div>
+<div id="panel" class="card hidden"></div>
+<div id="tip" class="hidden"></div>
+<script src="app.js"></script>
+</body>
+</html>
