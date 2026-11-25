@@ -25,7 +25,10 @@ screenshots:
 check:
 	$(PY) etl/check.py
 
+report:   ## gearing + top movers using the site's own JS engine
+	node etl/report.js
+
 clean:
 	rm -rf data-out web/data
 
-.PHONY: all download data refresh serve screenshots check clean
+.PHONY: all download data refresh serve screenshots check report clean

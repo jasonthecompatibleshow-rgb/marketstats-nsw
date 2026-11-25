@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insights · Top movers · Yieldmap NSW</title>
+<meta name="description" content="Free NSW rental analytics: biggest rent rises and falls, highest yields, yield changes and cash flow by postcode.">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="assets/site.css"><link rel="stylesheet" href="assets/pages.css">
+</head>
+<body>
+<header class="nav" id="nav"></header>
+<main class="wrap">
+  <section class="page-head">
+    <div class="eyebrow">Free analytics</div>
+    <h1>Top movers across NSW</h1>
+    <p class="muted lead" id="sub">Where rents and yields are moving fastest, from official NSW bond and sales data.</p>
+  </section>
+  <section class="filters card">
+    <div><div class="ctl-label">Dwelling</div><div class="seg" id="f_d"><button data-v="A">All</button><button data-v="U">Units</button><button data-v="H">Houses</button><button data-v="T">Townhouses</button></div></div>
+    <div><div class="ctl-label">Bedrooms</div><div class="seg" id="f_b"><button data-v="t">All</button><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4+</button></div></div>
+    <div><div class="ctl-label">Minimum sample</div><div class="seg" id="f_min"><button data-v="30">&gt;30</button><button data-v="50">50+</button><button data-v="100">100+</button><button data-v="200">200+</button></div></div>
+    <div class="small faint rule" id="rule"></div>
+  </section>
+  <section class="stats-row" id="headline"></section>
+  <section class="grid" id="grid"></section>
+  <p class="disclaimer" style="margin-top:22px">General information only, not financial advice. Medians describe what was rented or sold in each postcode that quarter, not the value of any property. Cash flow uses typical-investor assumptions (see the <a href="index.html#how">method</a>).</p>
+</main>
+<footer class="footer"><div class="wrap" id="foot"></div></footer>
+<script src="assets/common.js"></script>
+<script src="assets/insights.js"></script>
+</body>
+</html>

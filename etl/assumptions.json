@@ -1,0 +1,29 @@
+{
+ "_doc": "Typical-investor gearing assumptions. 'rate' is filled from RBA F6 at build time. Edit here, rebuild, and the map/insights/calculator defaults all change.",
+ "lvr_pct": 80,
+ "lvr_note": "20% deposit / 80% LVR, the usual no-LMI ceiling. APRA Quarterly ADI Property Exposures, June 2026 (published 17 Sep 2026): 29.7% of new loans funded had LVR >= 80%, so most new loans sit at or below 80%.",
+ "lvr_source": "https://www.apra.gov.au/quarterly-authorised-deposit-taking-institution-property-exposure-statistics-june-2026-highlights",
+ "repayment": "pi",
+ "repayment_note": "Principal & interest, 30-year term (the conservative default; interest-only is selectable in the calculator).",
+ "term_years": 30,
+ "vacancy_weeks": 2,
+ "mgmt_pct": 7.0,
+ "mgmt_note": "Property management ~7% of rent collected, incl. GST.",
+ "maintenance_pct": 5.0,
+ "maintenance_note": "Repairs & maintenance ~5% of gross rent (assumption).",
+ "costs": {
+  "A": {"strata": 2000, "council": 2200, "insurance": 1300, "_note": "All dwellings: midpoint of house and unit costs"},
+  "U": {"strata": 4000, "council": 1900, "insurance": 600},
+  "T": {"strata": 3000, "council": 2000, "insurance": 900},
+  "H": {"strata": 0,    "council": 2500, "insurance": 2000}
+ },
+ "costs_note": "Strata levies, council rates + water service charges and landlord/building insurance are flat state-wide assumptions, not postcode data. Check your actual levies and rates.",
+ "land_tax": {"threshold": 1075000, "base": 100, "rate_pct": 1.6, "default": 0,
+  "note": "NSW general threshold $1,075,000 (2026 land tax year, frozen since 2025): $100 + 1.6% of land value above it. Default $0 assumes a single investment property with land value under the threshold.",
+  "source": "https://www.revenue.nsw.gov.au/taxes-duties-levies-royalties/land-tax/understanding-land-tax/thresholds-and-rates"},
+ "neutral_band_weekly": 20,
+ "gearing_note": "Gearing is judged on the tax result: rent received minus deductible costs and loan interest (principal repayments are not deductible). Positive if > +$20/wk, negative if < -$20/wk, otherwise neutral. Cash flow additionally subtracts principal repayments.",
+ "tax_rates": [0, 15, 30, 37, 45],
+ "tax_note": "2026-27 resident marginal rates (15% bracket from 1 Jul 2026) plus 2% Medicare levy. Estimate only.",
+ "medicare_pct": 2
+}

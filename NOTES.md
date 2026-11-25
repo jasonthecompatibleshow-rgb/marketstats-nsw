@@ -6,3 +6,8 @@
   's', '-'). Sales prices are in $'000s.
 * Next data candidates (free, CC BY): BOCSAR crime by LGA/suburb, NSW Planning flood/bushfire-prone land and
   zoning layers (ePlanning spatial services), DCJ LGA tables for LGA view, DCJ previous quarters for trend lines.
+* 2026-11-25 (v2): landing / map / insights redesign; 70 historical DCJ files ingested (rents Sep 2017–Jun 2026,
+  sales Jun 2017–Mar 2026); RBA F6 rate 6.4% (Sep 2026). At these assumptions 0 of 98 well-sampled postcodes (all
+  dwellings, 100+ bonds/sales) are positively geared; best is Broken Hill 2880 at about −$113/wk.
+* Suburb names in a postcode are ordered by Census 2021 population within the overlap (area ordering put Thredbo
+  ahead of Jindabyne).
