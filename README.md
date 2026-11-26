@@ -37,6 +37,7 @@ make check      # prints sanity stats for 2042, 2127, 2155 (or: .venv/bin/python
 make report     # gearing for 2042/2127/2155 + top movers, via the site's JS engine (node)
 make serve      # http://localhost:8765  (range-capable server, needed for PMTiles)
 make screenshots  # headless Chromium: every page, light + dark, desktop + mobile; fails on any console error or theme flash -> screenshots-docs/
+make publish    # push built web/ to the gh-pages branch -> https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/
 make refresh    # force re-download of the newest DCJ quarter, RBA and AIHW tables, and rebuild
 ```
 

@@ -28,7 +28,10 @@ check:
 report:   ## gearing + top movers using the site's own JS engine
 	node etl/report.js
 
+publish:   ## push built web/ to gh-pages (GitHub Pages preview)
+	bash etl/publish_pages.sh
+
 clean:
 	rm -rf data-out web/data
 
-.PHONY: all download data refresh serve screenshots check report clean
+.PHONY: all download data refresh serve screenshots check report publish clean
