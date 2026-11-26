@@ -11,6 +11,7 @@ function miniMap() {
   if (mini) mini.remove();
   mini = new maplibregl.Map({ container: 'miniMap', style: HM.STYLE[HM.theme()], center: [151.02, -33.83], zoom: 9.2, interactive: false, attributionControl: { compact: true } });
   mini.on('load', () => {
+    document.querySelectorAll('#miniMap .maplibregl-ctrl-attrib').forEach((el) => el.classList.remove('maplibregl-compact-show'));
     HM.addPostcodes(mini, { opacity: 0.8 });
     const vals = Object.fromEntries(Object.entries(STATS).map(([p, r]) => [p, r.y_Ut ?? null]));
     const br = HM.quantileBreaks(Object.values(vals), RAMPS.yield.length);
@@ -25,6 +26,7 @@ async function init() {
   $('nav').innerHTML = HM.nav('');
   HM.initTheme(() => { window.mapReady = false; miniMap(); });
   [STATS, META, CFG] = await Promise.all(['data/stats.json', 'data/meta.json', 'data/config.json'].map(HM.load));
+  HM.load('data/aihw.json').then((A) => { $('aihwCtx').innerHTML = HM.aihwCards(A); $('aihwNote').innerHTML = HM.AIHW_NOTE(A); });
   const rows = HM.insightRows(await HM.load('data/insights.json'));
   const U = HM.movers(rows, STATS, CFG, { d: 'U', b: 't', min: 50 });
   const A = HM.movers(rows, STATS, CFG, { d: 'A', b: 't', min: 100 });
@@ -52,7 +54,7 @@ async function init() {
       <li>Management ${CFG.mgmt_pct}% incl. GST, ${CFG.vacancy_weeks} weeks vacancy, ${CFG.maintenance_pct}% maintenance, plus strata, council, water and insurance allowances. Land tax is $0 by default (land under the $1.075m threshold).</li>
       <li>Under these assumptions, <b>${pos} of ${U.cash.length}</b> well-sampled unit postcodes are positively geared.</li></ul></div>
     <div class="card"><h3>Yield caveat</h3><p>Sales aren't split by bedrooms, so yields compare bedroom rents with all-bedroom prices: units and townhouses with strata sales, houses with non-strata. Treat yields as a way to compare areas, not as a valuation.</p></div>
-    <div class="card"><h3>Not advice</h3><p>General information only, not financial, tax or investment advice. Your property, loan, costs and tax position will differ. Check with a licensed adviser.</p></div>`;
+    <div class="card"><h3>Not advice</h3><p>General information only, not financial, tax or investment advice. Your property, loan, costs and tax position will differ. Check with a licensed adviser. <a href="disclaimer.html">Read the disclaimer</a>.</p></div>`;
   $('foot').innerHTML = HM.footer(META, CFG);
   $('wl').addEventListener('submit', (e) => {
     e.preventDefault();

@@ -50,6 +50,7 @@ async function init() {
   $('sub').textContent = `Where rents and yields are moving fastest across ${META.postcodes} NSW postcodes, from ${META.n_quarters_rent} quarters of official NSW rental bond and sales data (latest rents: ${META.rent_period}).`;
   for (const [id, key] of [['f_d', 'd'], ['f_b', 'b'], ['f_min', 'min']]) $(id).addEventListener('click', (e) => { if (e.target.dataset.v) { st[key] = e.target.dataset.v; render(); } });
   $('foot').innerHTML = HM.footer(META, CFG);
+  HM.load('data/aihw.json').then((A) => { $('aihwCtx').innerHTML = HM.aihwCards(A); $('aihwNote').innerHTML = HM.AIHW_NOTE(A); });
   await render();
   window.pageReady = true;
 }

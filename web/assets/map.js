@@ -18,14 +18,19 @@ function metricDef(s = state) {
     case 'growth5': return { key: 'r5_' + k, low: 'rl_' + k, fmt: (v) => sgn(v), ramp: RAMPS.price, title: `Rent change, 5 years · ${D_LONG[s.d]} · ${B_LABEL[s.b]}`, note: `${META.qlabels[META.quarters.indexOf(META.rent_q) - 20]} → ${META.qlabels[META.quarters.indexOf(META.rent_q)]}, median new-bond rents.` };
     case 'cash': return { key: 'cash', fmt: (v) => sgnMoney(v) + '/wk', ramp: RAMPS.cash, fixed: [-600, -400, -200, -20, 20, 100, 200], computed: true,
       title: `Pre-tax weekly cash flow · typical investor · ${D_LONG[s.d]} · ${B_LABEL[s.b]}`, assump: true };
-    case 'gearing': return { key: 'gearing', fmt: (v) => ['Negatively geared', 'Neutral', 'Positively geared'][v], ramp: RAMPS.gearing, fixed: [0.5, 1.5], computed: true, cats: true,
-      title: `Gearing · typical investor · ${D_LONG[s.d]} · ${B_LABEL[s.b]}`, assump: true };
+    case 'gearing': return { key: 'gearing', fmt: (v) => `${HM.gearTier(v, CFG.neutral_band_weekly)} · ${sgnMoney(v)}/wk tax result`, tick: (v) => sgnMoney(v), ramp: RAMPS.gearing, fixed: HM.GEAR_BREAKS, computed: true,
+      title: `Gearing · weekly rental tax result · typical investor · ${D_LONG[s.d]} · ${B_LABEL[s.b]}`, assump: true,
+      note: `<div style="margin-bottom:6px">Rent received − costs − interest, per week. <b style="color:${RAMPS.gearing[2]}">Orange</b> = negatively geared (darker = bigger shortfall), grey = neutral (±$${CFG.neutral_band_weekly}/wk), <b style="color:${RAMPS.gearing[7]}">green</b> = positively geared. Hover a postcode for its break-even rate.</div>` };
     case 'income': return { key: 'c_hhinc', fmt: (v) => money(v) + '/wk', ramp: RAMPS.income, title: 'Median household income · Census 2021', note: 'Census 2021. Dwelling and bedroom filters don\'t apply.' };
   }
 }
 
 function assumptions() {
   return { rate: userAssump.rate ?? CFG.rate.value, lvr: userAssump.lvr ?? CFG.lvr_pct, repay: userAssump.repay ?? CFG.repayment };
+}
+function breakEvenFor(r, d = state.d, b = state.b) {
+  const x = HM.typical(CFG, r, d, b); if (!x) return null;
+  Object.assign(x, assumptions()); return HM.breakEven(x, CFG);
 }
 function typicalResult(r, d = state.d, b = state.b) {
   const x = HM.typical(CFG, r, d, b); if (!x) return null;
@@ -44,7 +49,7 @@ function currentValues(def) {
     let v = r[def.key];
     if (def.computed) {
       const res = typicalResult(r);
-      v = res == null ? null : def.key === 'cash' ? res.weekly : { negative: 0, neutral: 1, positive: 2 }[res.gearing];
+      v = res == null ? null : def.key === 'cash' ? res.weekly : res.taxableWeekly;
     }
     vals[poa] = v ?? null;
     if (def.low && r[def.low]) low[poa] = 1;
@@ -94,7 +99,8 @@ function drawLegend(def, breaks, n) {
     const lab = ['Negatively geared (< −$' + CFG.neutral_band_weekly + '/wk tax result)', 'Neutral (±$' + CFG.neutral_band_weekly + '/wk)', 'Positively geared (> +$' + CFG.neutral_band_weekly + '/wk)'];
     body = `<div class="lg-cats">${def.ramp.map((c, i) => `<div><span class="sw" style="background:${c}"></span>${lab[i]}</div>`).join('')}</div>`;
   } else {
-    const ticks = def.fixed ? def.fixed.map((b) => def.fmt(b).replace('/wk', '')) : [breaks[0], breaks[Math.floor(breaks.length / 2)], breaks[breaks.length - 1]].map((b) => def.fmt(b).replace('/wk', ''));
+    const tf = def.tick || ((b) => def.fmt(b).replace('/wk', ''));
+    const ticks = def.fixed ? def.fixed.map(tf) : [breaks[0], breaks[Math.floor(breaks.length / 2)], breaks[breaks.length - 1]].map((b) => def.fmt(b).replace('/wk', ''));
     body = `<div class="lg-bar">${def.ramp.map((c) => `<span style="background:${c}"></span>`).join('')}</div>
       <div class="lg-labels">${ticks.map((t) => `<span>${t}</span>`).join('')}</div>`;
   }
@@ -124,7 +130,8 @@ function renderPanel(poa, scrollTop = true) {
   const k = state.d + state.b, title = titleOverride || r.names[0] || 'Postcode ' + poa;
   const others = r.names.filter((n) => n !== title);
   const res = typicalResult(r);
-  const g = res ? HM.gearPill(res.gearing) : '<span class="pill neu">Gearing n/a for this mix</span>';
+  const be = res ? breakEvenFor(r) : null;
+  const g = res ? `<div class="gear-row">${HM.gearPill(res.gearing)}<span class="small muted">${sgnMoney(res.taxableWeekly)}/wk tax result${be != null ? ` · break-even rate <b>${pct(be, 2)}</b>` : ''}</span></div>` : '<span class="pill neu">Gearing n/a for this mix</span>';
   $('panelBody').innerHTML = `<div class="p-head">
       <button class="icon-btn x" id="closeP" aria-label="Close">✕</button>
       <h2>${title}</h2><div class="sub">NSW ${poa}${others.length ? ' · ' + others.join(', ') : ''}</div>
@@ -146,13 +153,26 @@ function renderPanel(poa, scrollTop = true) {
   syncUrl();
 }
 
+let AIHW = null;
+async function aihwSection(poa) {
+  try { AIHW = AIHW || await HM.load('data/aihw.json'); } catch (e) { return; }
+  const el = $('sa2ctx'); if (!el || selected !== poa) return;
+  const L = AIHW.sa2[poa];
+  const st = AIHW.state.cra_stress, n = st.years.length - 1;
+  el.innerHTML = `<h3>Rent Assistance nearby · AIHW</h3>
+    <div class="caveat" style="margin:0 0 8px"><span class="pill neu">SA2-level, not postcode</span> Income units receiving Commonwealth Rent Assistance in ABS SA2 areas overlapping this postcode, at June. SA2 and postcode boundaries differ, so these are not added up.</div>
+    ${L ? `<table class="t"><tr><th>SA2 area</th><th>Overlap</th><th>2023</th><th>2025</th><th>Change</th></tr>${L.map((a) => `<tr><td>${a[1]}</td><td class="faint">${Math.round(a[2] * 100)}%</td><td>${a[3]?.toLocaleString('en-AU') ?? '–'}</td><td>${a[5]?.toLocaleString('en-AU') ?? '–'}</td><td class="${a[5] >= a[3] ? 'up' : 'down'}">${a[3] ? sgn(100 * (a[5] / a[3] - 1)) : '–'}</td></tr>`).join('')}</table>` : '<div class="empty">No SA2 Rent Assistance figures for this postcode.</div>'}
+    <div class="caveat">NSW state-wide, ${st.nsw[n]}% of Rent Assistance recipients were in rental stress in June ${st.years[n]} (state-level). ${AIHW.meta.cra_attribution} CC BY 4.0. Counts rounded to the nearest 5 by AIHW.</div>`;
+}
 function renderOverview(r) {
   $('tabBody').innerHTML = `<div class="p-sec"><h3>Rent by bedrooms</h3>${rentMatrix(r)}</div>
     <div class="p-sec"><h3>Sales</h3>${salesTable(r)}</div>
     <div class="p-sec"><h3>People · Census 2021</h3><div class="kv">
       <span>Population</span><b>${r.c_pop?.toLocaleString('en-AU') ?? '–'}</b><span>Median age</span><b>${r.c_age ?? '–'}</b>
       <span>Median household income</span><b>${money(r.c_hhinc)}/wk</b><span>Median rent paid (2021)</span><b>${money(r.c_rent)}/wk</b>
-      <span>Average household size</span><b>${r.c_hhsize ?? '–'}</b><span>Rental bonds held now</span><b>${r.held?.toLocaleString('en-AU') ?? '–'}</b></div></div>`;
+      <span>Average household size</span><b>${r.c_hhsize ?? '–'}</b><span>Rental bonds held now</span><b>${r.held?.toLocaleString('en-AU') ?? '–'}</b></div></div>
+    <div class="p-sec" id="sa2ctx"></div>`;
+  aihwSection(selected);
 }
 
 // ---------- trends ----------
@@ -318,9 +338,10 @@ function buildMap() {
       hoverId = poa; map.setFeatureState({ source: 'pc', sourceLayer: 'postcodes', id: poa }, { hover: true });
     }
     let v = r[def.key];
-    if (def.computed) { const res = typicalResult(r); v = res ? (def.key === 'cash' ? res.weekly : { negative: 0, neutral: 1, positive: 2 }[res.gearing]) : null; }
+    let extra = '';
+    if (def.computed) { const res = typicalResult(r); v = res ? (def.key === 'cash' ? res.weekly : res.taxableWeekly) : null; if (res && def.key === 'gearing') { const be = breakEvenFor(r); extra = be == null ? '' : `<span class="faint">Break-even rate ${pct(be, 2)} vs ${pct(assumptions().rate, 2)}</span>`; } }
     map.getCanvas().style.cursor = 'pointer';
-    tip.innerHTML = `<b>${r.names.slice(0, 2).join(', ') || 'Postcode'} · ${poa}</b>${v == null ? '<span class="faint">No data</span>' : def.fmt(v)}${def.low && r[def.low] ? ' <span class="faint">(small sample)</span>' : ''}`;
+    tip.innerHTML = `<b>${r.names.slice(0, 2).join(', ') || 'Postcode'} · ${poa}</b>${v == null ? '<span class="faint">No data</span>' : def.fmt(v)}${def.low && r[def.low] ? ' <span class="faint">(small sample)</span>' : ''}${extra}`;
     tip.style.left = Math.min(e.point.x + 16, innerWidth - 270) + 'px'; tip.style.top = e.point.y + 16 + 'px'; tip.classList.remove('hidden');
   });
   map.on('mouseleave', 'pc-fill', () => {

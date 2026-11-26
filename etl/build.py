@@ -15,6 +15,7 @@ import pandas as pd, geopandas as gpd, duckdb
 
 sys.path.insert(0, os.path.dirname(__file__))
 import dcj_parse as P
+import aihw
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 RAW, OUT, WEB = ROOT / "data-raw", ROOT / "data-out", ROOT / "web" / "data"
@@ -214,6 +215,9 @@ def main():
     cfg["rate"] = rate | {"note": "RBA Table F6, average rate on new investor variable-rate housing loans funded in the month, all institutions"}
     cfg["rate_pi_new_investor"] = rate_pi
     (WEB / "config.json").write_text(json.dumps(cfg, indent=1))
+
+    ai = aihw.build(poa, WEB)
+    print(f"AIHW: {len(ai['state'])} NSW/national series, CRA SA2 context for {len(ai['sa2'])} postcodes")
 
     meta = {"built_at": datetime.datetime.now().isoformat(timespec="seconds"),
             "rent_period": QLABEL(R_LAST) + " quarter", "sales_period": QLABEL(S_LAST) + " quarter",

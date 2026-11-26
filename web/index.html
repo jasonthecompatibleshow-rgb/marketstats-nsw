@@ -2,8 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Yieldmap NSW · Rent, yield &amp; cash flow for every NSW postcode</title>
-<meta name="description" content="Free NSW property analytics: rents by bedroom, gross yields, gearing and nine years of trends for every postcode, from official NSW Government data.">
+<!--head:start-->
+<script>(function(){var t;try{t=localStorage.getItem('ms-theme')}catch(e){}document.documentElement.dataset.theme=t||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')})()</script>
+<title>MarketStats NSW · Rent, yield &amp; gearing for every NSW postcode</title>
+<meta name="description" content="Free NSW property analytics: rents by bedroom, gross yields, gearing and nine years of trends for every postcode, from official public data.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0b0f19" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:site_name" content="MarketStats"><meta property="og:type" content="website"><meta property="og:title" content="MarketStats NSW · Rent, yield &amp; gearing for every NSW postcode"><meta property="og:description" content="Free NSW property analytics: rents by bedroom, gross yields, gearing and nine years of trends for every postcode, from official public data."><meta property="og:image" content="og.png"><meta name="twitter:card" content="summary_large_image">
+<!--head:end-->
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <link rel="stylesheet" href="assets/site.css"><link rel="stylesheet" href="assets/pages.css"><link rel="stylesheet" href="assets/landing.css">
@@ -66,10 +73,19 @@
     </form>
   </section>
 
+  <section class="section" id="context">
+    <div class="eyebrow">NSW housing context · AIHW</div>
+    <h2 class="h2">The bigger picture, state-wide</h2>
+    <p class="muted">Annual housing assistance indicators for New South Wales as a whole. These are state-level figures, not postcode figures.</p>
+    <div class="ctx-grid" id="aihwCtx"></div>
+    <p class="ctx-note" id="aihwNote"></p>
+  </section>
+
   <section class="section" id="how">
     <div class="eyebrow">Method &amp; sources</div>
     <h2 class="h2">Transparent by design</h2>
     <div class="method" id="method"></div>
+    <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-ghost" href="data.html">Full data sources &amp; method →</a><a class="btn btn-ghost" href="disclaimer.html">Disclaimer</a></div>
   </section>
 </main>
 <footer class="footer"><div class="wrap" id="foot"></div></footer>

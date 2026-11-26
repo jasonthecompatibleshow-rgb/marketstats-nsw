@@ -2,12 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Insights · Top movers · Yieldmap NSW</title>
-<meta name="description" content="Free NSW rental analytics: biggest rent rises and falls, highest yields, yield changes and cash flow by postcode.">
+<!--head:start-->
+<script>(function(){var t;try{t=localStorage.getItem('ms-theme')}catch(e){}document.documentElement.dataset.theme=t||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')})()</script>
+<title>Insights · Top movers · MarketStats NSW</title>
+<meta name="description" content="Free NSW rental analytics: biggest rent rises and falls, highest yields, yield changes, cash flow and NSW housing context by postcode.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0b0f19" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:site_name" content="MarketStats"><meta property="og:type" content="website"><meta property="og:title" content="Insights · Top movers · MarketStats NSW"><meta property="og:description" content="Free NSW rental analytics: biggest rent rises and falls, highest yields, yield changes, cash flow and NSW housing context by postcode."><meta property="og:image" content="og.png"><meta name="twitter:card" content="summary_large_image">
+<!--head:end-->
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="assets/site.css"><link rel="stylesheet" href="assets/pages.css">
 </head>
-<body>
+<body data-page="insights">
 <header class="nav" id="nav"></header>
 <main class="wrap">
   <section class="page-head">
@@ -23,7 +30,14 @@
   </section>
   <section class="stats-row" id="headline"></section>
   <section class="grid" id="grid"></section>
-  <p class="disclaimer" style="margin-top:22px">General information only, not financial advice. Medians describe what was rented or sold in each postcode that quarter, not the value of any property. Cash flow uses typical-investor assumptions (see the <a href="index.html#how">method</a>).</p>
+  <section style="margin-top:34px" id="context">
+    <div class="eyebrow">NSW housing context · AIHW</div>
+    <h2 style="font-size:22px;margin-top:4px">Rental stress, social housing and the waitlist</h2>
+    <p class="muted small" style="margin:4px 0 0">State-level annual figures for New South Wales. These don't change with the filters above and are not postcode figures.</p>
+    <div class="ctx-grid" id="aihwCtx"></div>
+    <p class="ctx-note" id="aihwNote"></p>
+  </section>
+  <p class="disclaimer" style="margin-top:22px">General information only, not financial advice. Medians describe what was rented or sold in each postcode that quarter, not the value of any property. Cash flow uses typical-investor assumptions (see <a href="data.html#gearing">data &amp; method</a> and the <a href="disclaimer.html">disclaimer</a>).</p>
 </main>
 <footer class="footer"><div class="wrap" id="foot"></div></footer>
 <script src="assets/common.js"></script>

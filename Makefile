@@ -11,10 +11,10 @@ download: .venv/bin/python
 	$(PY) etl/download.py
 
 data: download
-	$(PY) etl/build.py
+	$(PY) etl/build.py && $(PY) etl/heads.py
 
-refresh: .venv/bin/python   ## force re-download of latest DCJ quarter + rebuild
-	$(PY) etl/download.py --force && $(PY) etl/build.py
+refresh: .venv/bin/python   ## force re-download of latest DCJ quarter, RBA, AIHW + rebuild
+	$(PY) etl/download.py --force && $(PY) etl/build.py && $(PY) etl/heads.py
 
 serve:
 	$(PY) serve.py $(PORT)

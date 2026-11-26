@@ -17,4 +17,4 @@
 .spark{vertical-align:middle;color:var(--accent)}
 .empty{padding:16px 0;color:var(--faint);font-size:13px}
 @media (max-width:900px){.grid{grid-template-columns:1fr}.stats-row{grid-template-columns:repeat(2,1fr)}.page-head h1{font-size:30px}.filters{top:56px}}
-@media (max-width:520px){.wrap{padding:0 14px}.board .spark{display:none}.nav .links a{padding:6px 8px}.brand .pill{display:none}.filters{position:static}}
+@media (max-width:520px){.wrap{padding:0 14px}.board .spark{display:none}.filters{position:static}}

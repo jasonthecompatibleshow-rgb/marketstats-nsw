@@ -1,6 +1,11 @@
-# Yieldmap NSW (MVP)
+# MarketStats (NSW)
 
-A static, key-free site for NSW property analytics:
+**MarketStats** is a free, static, key-free property analytics site for every NSW postcode: rents by bedroom, prices,
+gross yield, typical-investor gearing and cash flow, nine years of trends, top movers and NSW housing context from
+the AIHW. It is built only from official public data licensed for commercial reuse, and it is aimed at investors
+while staying useful for buyers and renters.
+
+Pages (all share one nav and footer, plus a light/dark theme):
 
 * `index.html` landing page: live stats, top-yield / rent-mover / cash-flow previews, audiences, method, waitlist placeholder
 * `map.html` MapLibre map: rent, yield, cash flow, gearing, price, rent change (1y/5y), income; dwelling × bedroom
@@ -8,11 +13,20 @@ A static, key-free site for NSW property analytics:
   overview, uPlot trend charts and a full calculator (LVR/loan, rate, term, P&I/IO, rent, vacancy, all costs, land
   tax from land value, depreciation, after-tax estimate at a selectable marginal rate)
 * `insights.html` top movers: rent rises/falls 1y and 5y, highest yields, yield rises/falls, best cash flow, with
-  dwelling, bedroom and minimum-sample filters
+  dwelling, bedroom and minimum-sample filters, plus NSW state-level AIHW housing context cards
+* `about.html`, `disclaimer.html`, `data.html` (data sources, licences, attribution and methodology)
+
+**Brand**: wordmark "Market**Stats**" with an indigo→teal gradient bar-chart mark (`web/favicon.svg`, inline SVG in
+`HM.LOGO`), a small "NSW" scope badge, and Inter / Inter Display type. Colours are CSS variables in
+`web/assets/site.css` (`:root` for light, `[data-theme="dark"]` for dark).
+
+**Theme**: every page has a tiny inline `<head>` script (kept in sync by `etl/heads.py`) that sets `data-theme`
+before first paint from `localStorage['ms-theme']`, falling back to `prefers-color-scheme`. The toggle in the nav
+saves the choice. Until you pick one, the site follows OS changes. Maps swap between OpenFreeMap Positron and Dark.
 
 The gearing engine lives in one place (`web/assets/common.js`, `HM.evaluate`) and is used by every page and by
 `etl/report.js`. Typical-investor assumptions are in `etl/assumptions.json`; the interest rate is filled from RBA F6 at build. Built only from free, commercially reusable data
-(see [DATA_SOURCES.md](DATA_SOURCES.md)).
+(see [DATA_SOURCES.md](DATA_SOURCES.md) and the site's `data.html`).
 
 ## Run it
 
@@ -22,8 +36,8 @@ make            # creates .venv, downloads raw data (skips files already present
 make check      # prints sanity stats for 2042, 2127, 2155 (or: .venv/bin/python etl/check.py 2000 2150)
 make report     # gearing for 2042/2127/2155 + top movers, via the site's JS engine (node)
 make serve      # http://localhost:8765  (range-capable server, needed for PMTiles)
-make screenshots  # headless Chromium, desktop + mobile, fails on any console error -> screenshots-docs/
-make refresh    # force re-download of the newest DCJ quarter and rebuild
+make screenshots  # headless Chromium: every page, light + dark, desktop + mobile; fails on any console error or theme flash -> screenshots-docs/
+make refresh    # force re-download of the newest DCJ quarter, RBA and AIHW tables, and rebuild
 ```
 
 Needs Python 3.11+, `tippecanoe` (apt `tippecanoe`; if missing, the build falls back to simplified GeoJSON) and `make`.
@@ -33,12 +47,14 @@ Needs Python 3.11+, `tippecanoe` (apt `tippecanoe`; if missing, the build falls 
 ```
 etl/download.py    scrape DCJ page for latest rent/sales xlsx + fetch ABS files -> data-raw/ (+ manifest.json)
 etl/dcj_parse.py   header-driven parser for every DCJ issue since Sep 2017
+etl/aihw.py        AIHW Housing assistance tables -> NSW/national series + SA2 Rent Assistance per postcode (aihw.json)
+etl/heads.py       shared <head> block (no-flash theme script, favicon, meta/OG) for every page
 etl/build.py       metrics, time series (ts/, tsk/), insights.json, config.json, suburb overlay, tippecanoe -> web/data/
 etl/assumptions.json  typical-investor gearing assumptions
 etl/report.js      gearing + movers report using web/assets/common.js
 etl/check.py       print stats for watch-list postcodes
 etl/screenshot.py  Playwright smoke test + screenshots
-web/               static site (index.html, map.html, insights.html, assets/); web/data/ is generated
+web/               static site (index, map, insights, about, disclaimer, data .html + assets/); web/data/ is generated
 serve.py           local static server with HTTP Range support
 data-raw/, data-out/, web/data/   generated, git-ignored, rebuildable
 ```
@@ -65,3 +81,20 @@ Median price for the dwelling type (units/townhouses → strata, houses → non-
 variable rate (FLRHIFVA), P&I 30 years, 2 weeks vacancy, 7% management incl. GST, 5% maintenance, flat strata /
 council+water / insurance allowances per dwelling type, land tax $0 by default. Gearing = sign of the rental tax
 result (rent received − costs − interest, ±$20/wk neutral band); cash flow also subtracts principal. Not advice.
+
+The **Gearing** map colours postcodes by the weekly tax result in tiers (−$400, −$300, −$200, −$100, −$20, +$20,
++$100), so deep and mild negative gearing look different. The panel and tooltip show the **break-even rate**: the
+interest rate at which the tax result would be $0 (`HM.breakEven`, bisection on `HM.evaluate`).
+
+## AIHW housing context
+
+`etl/aihw.py` reads the AIHW *Housing assistance in Australia 2026* data tables (CC BY 4.0) and writes
+`web/data/aihw.json`:
+
+* `state`: NSW and national annual series for CRA rental stress (CRA.9), CRA recipients (CRA.9), social housing
+  share (SOCIALSHARE.1), public housing waitlist (HOUSEHOLDS.28) and social housing dwellings (DWELLINGS.2). These
+  are shown as **NSW state-level** cards on the landing, insights and data pages.
+* `sa2`: for each postcode, the ABS SA2 areas covering ≥5% of it, with CRA recipient counts for June 2023–2025
+  (CRA.2b). These are shown in the map panel and labelled **SA2-level, not postcode**.
+
+See DATA_SOURCES.md for exact URLs, licence, attribution and the items deliberately left out.

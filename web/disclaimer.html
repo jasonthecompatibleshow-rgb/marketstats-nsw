@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<!--head:start-->
+<script>(function(){var t;try{t=localStorage.getItem('ms-theme')}catch(e){}document.documentElement.dataset.theme=t||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')})()</script>
+<title>Disclaimer · MarketStats NSW</title>
+<meta name="description" content="MarketStats provides general information only. Read about data limitations, median and yield caveats and modelled gearing assumptions.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0b0f19" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:site_name" content="MarketStats"><meta property="og:type" content="website"><meta property="og:title" content="Disclaimer · MarketStats NSW"><meta property="og:description" content="MarketStats provides general information only. Read about data limitations, median and yield caveats and modelled gearing assumptions."><meta property="og:image" content="og.png"><meta name="twitter:card" content="summary_large_image">
+<!--head:end-->
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="assets/site.css"><link rel="stylesheet" href="assets/pages.css">
+</head>
+<body data-page="disclaimer">
+<header class="nav" id="nav"></header>
+<main class="wrap">
+  <section class="page-head"><div class="eyebrow">Disclaimer</div><h1>Please read before relying on anything here</h1>
+    <p class="muted lead">MarketStats is a free source of general information about the NSW property market. It is not advice. Last reviewed with the build of <span data-k="built">the current data</span>.</p></section>
+  <article class="doc">
+    <div class="toc"><a href="#advice">Not advice</a><a href="#data">Data limitations</a><a href="#medians">Medians &amp; yields</a><a href="#gearing">Gearing model</a><a href="#endorse">No endorsement</a><a href="#liability">Liability</a></div>
+
+    <h2 id="advice">General information only, not advice</h2>
+    <p>Everything on MarketStats, including maps, rankings, yields, cash flow and gearing estimates, the calculator and any commentary, is <strong>general information only</strong>. It is <strong>not financial, investment, credit, tax or legal advice</strong> and is not a recommendation to buy, sell, rent or borrow for any property.</p>
+    <p>MarketStats does not hold an Australian Financial Services Licence (AFSL) or an Australian Credit Licence, and it does not consider your objectives, financial situation or needs. Before making a decision, consider whether the information suits your circumstances and get advice from a licensed financial adviser, a registered tax agent, a credit professional or a solicitor as appropriate.</p>
+
+    <h2 id="data">Data limitations and sample sizes</h2>
+    <ul>
+      <li>Rents come from <strong>new rental bonds lodged</strong> with NSW Fair Trading. They describe new leases in the quarter, not all existing rents, and exclude tenancies where no bond was lodged.</li>
+      <li>Sale prices are the <strong>property sales</strong> compiled and published by DCJ in the Rent and Sales Report, by contract date. Recent quarters are incomplete and are usually revised as late settlements are recorded.</li>
+      <li>DCJ <strong>suppresses</strong> results for 10 or fewer bonds or sales and flags 11–30 as small samples. MarketStats hides suppressed areas, fades small samples on the map, and leaves them out of rankings by default. A small sample can still swing sharply from quarter to quarter.</li>
+      <li>A few isolated historical points that are more than 2.5 times (or less than 0.4 times) their neighbouring quarters are treated as data errors and left out of trend charts and historical comparisons. Latest-quarter figures always use the published values.</li>
+      <li>Postcodes are ABS postal areas, which approximate Australia Post delivery areas. Suburb names listed for a postcode are the 2021 Census suburbs that overlap it, ordered by population.</li>
+      <li>Census figures are from <strong>2021</strong> and may be out of date.</li>
+      <li>AIHW housing assistance figures are <strong>NSW state-level</strong> (or SA2-level where labelled), not postcode figures. Rent Assistance counts are rounded by AIHW and only cover people receiving Commonwealth Rent Assistance.</li>
+      <li>Source data can contain errors and can be revised. We republish it as supplied, apart from the steps described on the <a href="data.html">Data &amp; method</a> page.</li>
+    </ul>
+
+    <h2 id="medians">Medians and yields are approximations</h2>
+    <ul>
+      <li>A <strong>median</strong> is the middle value of what was rented or sold in a postcode in a quarter. It is not the value of any particular property, and it changes with the mix of properties that happened to trade.</li>
+      <li><strong>Gross yield</strong> is median weekly rent × 52 ÷ median sale price. DCJ does not split sales by bedrooms, so yields compare a bedroom-specific rent with an all-bedroom price: units and townhouses use strata sales, houses use non-strata sales. Use yields to compare areas, not to value a property.</li>
+      <li>Yields ignore vacancy, costs and purchase costs. Net yield and cash flow in the calculator use the assumptions below.</li>
+    </ul>
+
+    <h2 id="gearing">Gearing and cash flow are modelled</h2>
+    <p>The "typical investor" figures are a model, not a measurement. They assume:</p>
+    <ul>
+      <li>purchase at the postcode's median price for that dwelling type, with a <span data-k="deposit">20%</span> deposit (<span data-k="lvr">80%</span> LVR) and no purchase costs or stamp duty;</li>
+      <li>the RBA average variable rate on new investor loans (<span data-k="rate">current</span>, <span data-k="rate_date">latest month</span>), principal and interest over <span data-k="term">30</span> years, using first-year interest;</li>
+      <li>median new-bond rent with <span data-k="vac">2</span> weeks' vacancy a year, <span data-k="mgmt">7%</span> management, <span data-k="maint">5%</span> maintenance, and fixed allowances for strata, council, water and insurance by dwelling type;</li>
+      <li>no land tax by default (land value under the <span data-k="lt_threshold">general threshold</span>) and no depreciation;</li>
+      <li>"positively" or "negatively" geared is based on the rental <strong>tax result</strong> (rent received minus costs and interest), with ±<span data-k="band">$20</span> a week treated as neutral. Cash flow also subtracts principal repayments.</li>
+    </ul>
+    <p>Your loan, rate, costs, property and tax position will differ. After-tax figures are rough estimates using a flat marginal rate plus the Medicare levy, and ignore offsets, other income, capital gains and changes in tax law.</p>
+
+    <h2 id="endorse">No government endorsement</h2>
+    <p>MarketStats uses data published by the NSW Department of Communities and Justice, the Australian Bureau of Statistics, the Reserve Bank of Australia, the Australian Prudential Regulation Authority and the Australian Institute of Health and Welfare under Creative Commons licences. Using that data does <strong>not</strong> mean any of these organisations has endorsed MarketStats, its analysis or its conclusions. MarketStats is not a government website.</p>
+
+    <h2 id="liability">Accuracy and liability</h2>
+    <p>We take care to process the data correctly, but we make no warranty that anything on this site is accurate, complete or current, or fit for any purpose. To the extent permitted by law, MarketStats is not liable for any loss arising from use of, or reliance on, this site. Nothing here excludes any rights you have under the Australian Consumer Law that cannot be excluded.</p>
+    <p>Links to other websites are provided for convenience and do not mean we endorse them.</p>
+  </article>
+</main>
+<footer class="footer"><div class="wrap" id="foot"></div></footer>
+<script src="assets/common.js"></script>
+<script src="assets/info.js"></script>
+</body>
+</html>

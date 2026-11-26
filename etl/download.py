@@ -5,7 +5,7 @@ import json, re, sys, zipfile, datetime, pathlib, urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 RAW = ROOT / "data-raw"
-RAW.mkdir(exist_ok=True)
+RAW.mkdir(exist_ok=True); (RAW / "aihw").mkdir(exist_ok=True)
 FORCE = "--force" in sys.argv
 UA = {"User-Agent": "Mozilla/5.0 (heatmap-app ETL)"}
 
@@ -13,10 +13,17 @@ DCJ_PAGE = "https://dcj.nsw.gov.au/about-us/families-and-communities-statistics/
 DCJ_PREV = "https://dcj.nsw.gov.au/about-us/families-and-communities-statistics/housing-rent-and-sales/previous-rent-and-sales-reports.html"
 RBA_F6 = "https://www.rba.gov.au/statistics/tables/csv/f6-data.csv"   # housing lending rates (re-fetched every run)
 ABS_ASGS = "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/digital-boundary-files/"
+# AIHW "Housing assistance in Australia 2026" data tables (CC BY 4.0). Listed by the page's
+# /api/search/all-downloadable-resources endpoint; update these when the 2027 edition is released.
+AIHW = "https://www.aihw.gov.au/getmedia/"
 STATIC = {
     "POA_2021_AUST_GDA2020_SHP.zip": ABS_ASGS + "POA_2021_AUST_GDA2020_SHP.zip",
     "SAL_2021_AUST_GDA2020_SHP.zip": ABS_ASGS + "SAL_2021_AUST_GDA2020_SHP.zip",
     "census_gcp_poa_nsw.zip": "https://www.abs.gov.au/census/find-census-data/datapacks/download/2021_GCP_POA_for_NSW_short-header.zip",
+    "SA2_2021_AUST_SHP_GDA2020.zip": ABS_ASGS + "SA2_2021_AUST_SHP_GDA2020.zip",
+    "aihw/AIHW-HOU-345-Data-tables-Financial-assistance.xlsx": AIHW + "d9baced2-f3c5-4055-a1a0-37b16db824b4/AIHW-HOU-345-Data-tables-Financial-assistance.xlsx",
+    "aihw/AIHW-HOU-345-Data-tables-Social-housing-dwellings.xlsx": AIHW + "81fea47e-962b-4b02-8a06-4712bd97aa78/AIHW-HOU-345-Data-tables-Social-housing-dwellings.xlsx",
+    "aihw/AIHW-HOU-345-Data-tables-Social-housing-households.xlsx": AIHW + "0bee19af-29d5-4aab-b910-915346e0aac7/AIHW-HOU-345-Data-tables-Social-housing-households.xlsx",
     "census_gcp_sal_nsw.zip": "https://www.abs.gov.au/census/find-census-data/datapacks/download/2021_GCP_SAL_for_NSW_short-header.zip",
 }
 
@@ -60,7 +67,7 @@ def main():
     for name, url in STATIC.items():
         fetch(url, RAW / name)
         manifest[name] = {"file": name, "url": url}
-    for z, d in [("POA_2021_AUST_GDA2020_SHP.zip", "poa"), ("SAL_2021_AUST_GDA2020_SHP.zip", "sal")]:
+    for z, d in [("POA_2021_AUST_GDA2020_SHP.zip", "poa"), ("SAL_2021_AUST_GDA2020_SHP.zip", "sal"), ("SA2_2021_AUST_SHP_GDA2020.zip", "sa2")]:
         if not (RAW / d).exists():
             zipfile.ZipFile(RAW / z).extractall(RAW / d)
     manifest["downloaded_at"] = datetime.datetime.now().isoformat(timespec="seconds")

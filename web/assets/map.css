@@ -68,7 +68,7 @@ details summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:12.
 #tip{position:absolute;pointer-events:none;padding:8px 11px;border-radius:10px;font-size:12.5px;z-index:7;max-width:260px}
 #tip b{display:block}
 @media (max-width:760px){
-  .nav{padding:10px 14px;gap:10px}.nav .links a{padding:6px 9px}.brand .pill{display:none}
+  .nav{padding:10px 14px;gap:10px}
   #controls{top:62px;left:10px;right:10px;width:auto;padding:10px;max-height:calc(100% - 76px)}
   .mobile-only{display:inline-flex;margin-top:8px}
   #filters.collapsed{display:none}
@@ -82,3 +82,4 @@ details summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:12.
   .p-head{top:15px}
   .maplibregl-ctrl-bottom-right{bottom:0}
 }
+.gear-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:2px}
