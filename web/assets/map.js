@@ -5,8 +5,30 @@ const isMobile = () => matchMedia('(max-width:760px)').matches;
 const params = Object.fromEntries(new URLSearchParams(location.search));
 const state = { m: 'rent', d: 'A', b: 't', tab: 'overview', ...params };
 const userAssump = { rate: null, lvr: null, repay: null };   // quick overrides for cash/gearing map metrics
+// ---------- free-account gating: logged-out visitors get the headline view (All dwellings / All beds, latest quarter) ----------
+const OPEN_METRICS = ['rent', 'yield', 'price', 'cash', 'gearing', 'income'];
+const member = () => !!(window.MSAuth && MSAuth.isMember());
+// effective state: what is shown. `state` keeps what the URL asked for, so signing in restores it without losing your place.
+const S = () => member() ? state : { ...state, d: 'A', b: 't', m: OPEN_METRICS.includes(state.m) ? state.m : 'rent' };
+const LOCK_MSG = { d: 'Create a free account to filter by units, houses and townhouses.', b: 'Create a free account for bedroom-level rents and yields.', m: 'Create a free account for 1- and 5-year rent change maps.',
+  time: 'Create a free account to scroll back through 9 years of quarterly history.', trends: 'Create a free account to see 9 years of rent, price and yield trends.',
+  calc: 'Create a free account to run the full calculator with your own loan, costs and tax rate.' };
+function gatedHost(title, text) {   // render into the tab body, or into a blurred, locked preview when logged out
+  if (member()) return $('tabBody');
+  $('tabBody').innerHTML = `<div class="p-sec">${MSAuth.lock('<div id="gatedHost"></div>', { title, text, reason: text })}</div>`;
+  return $('gatedHost');
+}
+function applyGates() {
+  const m = member();
+  document.querySelectorAll('#metric button').forEach((b) => b.classList.toggle('lockd', !m && !OPEN_METRICS.includes(b.dataset.v)));
+  document.querySelectorAll('#dwelling button').forEach((b) => b.classList.toggle('lockd', !m && b.dataset.v !== 'A'));
+  document.querySelectorAll('#beds button').forEach((b) => b.classList.toggle('lockd', !m && b.dataset.v !== 't'));
+  for (const id of ['metric', 'dwelling', 'beds']) { const key = { metric: 'm', dwelling: 'd', beds: 'b' }[id]; $(id).querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === S()[key])); }
+  $('timeBox').classList.toggle('gated', !m);
+  $('timeLock').hidden = m;
+}
 
-function metricDef(s = state) {
+function metricDef(s = S()) {
   const k = s.d + s.b, p = PRICE_FOR[s.d];
   switch (s.m) {
     case 'rent': return { key: 'r_' + k, low: 'rl_' + k, tsk: 'r_' + k, fmt: (v) => money(v) + '/wk', ramp: RAMPS.rent, title: `Median weekly rent · ${D_LONG[s.d]} · ${B_LABEL[s.b]}` };
@@ -28,11 +50,11 @@ function metricDef(s = state) {
 function assumptions() {
   return { rate: userAssump.rate ?? CFG.rate.value, lvr: userAssump.lvr ?? CFG.lvr_pct, repay: userAssump.repay ?? CFG.repayment };
 }
-function breakEvenFor(r, d = state.d, b = state.b) {
+function breakEvenFor(r, d = S().d, b = S().b) {
   const x = HM.typical(CFG, r, d, b); if (!x) return null;
   Object.assign(x, assumptions()); return HM.breakEven(x, CFG);
 }
-function typicalResult(r, d = state.d, b = state.b) {
+function typicalResult(r, d = S().d, b = S().b) {
   const x = HM.typical(CFG, r, d, b); if (!x) return null;
   Object.assign(x, assumptions());
   return HM.evaluate(x, CFG);
@@ -64,13 +86,13 @@ async function recolour(panel = true) {
   let shown = cur;
   const timeOK = !!def.tsk;
   $('timeBox').classList.toggle('disabled', !timeOK);
-  if (timeOK && qi != null && qi < lastQ()) {
+  if (timeOK && member() && qi != null && qi < lastQ()) {
     const t = await loadTsk(def.tsk);
     shown = { vals: Object.fromEntries(Object.keys(STATS).map((p) => [p, t[p]?.[qi] ?? null])), low: {} };
   }
   HM.paint(map, shown.vals, breaks, def.ramp, shown.low);
   drawLegend(def, breaks, Object.values(shown.vals).filter((v) => v != null).length);
-  $('tLabel').textContent = !timeOK ? 'n/a' : qi == null || qi >= lastQ() ? 'Latest' : META.qlabels[qi];
+  $('tLabel').textContent = !timeOK ? 'n/a' : !member() || qi == null || qi >= lastQ() ? 'Latest' : META.qlabels[qi];
   $('note').innerHTML = (def.note || '') + (def.assump ? assumpForm() : '');
   if (def.assump) wireAssumpForm();
   syncUrl();
@@ -112,7 +134,7 @@ function drawLegend(def, breaks, n) {
 function rentMatrix(r) {
   const cols = ['A', 'U', 'H', 'T'];
   return `<table class="t"><tr><th>Beds</th>${cols.map((c) => `<th>${D_LABEL[c]}</th>`).join('')}</tr>` + ['t', '1', '2', '3', '4'].map((b) => `<tr><td>${B_LABEL[b]}</td>` + cols.map((d) => {
-    const k = d + b, v = r['r_' + k], sel = d === state.d && b === state.b ? ' class="sel"' : '';
+    const k = d + b, v = r['r_' + k], sel = d === S().d && b === S().b ? ' class="sel"' : '';
     if (v == null) return `<td${sel}><span class="faint">–</span></td>`;
     return `<td${sel} title="12-month change ${sgn(r['rg_' + k])}"><span class="${r['rl_' + k] ? 'low' : ''}">$${v}${r['rl_' + k] ? '*' : ''}</span></td>`;
   }).join('') + '</tr>').join('') + `</table><div class="caveat">Median weekly rent, new bonds, ${META.rent_period}. * 11–30 bonds; – 10 or fewer (suppressed).</div>`;
@@ -127,7 +149,7 @@ function renderPanel(poa, scrollTop = true) {
   if (selected !== poa) titleOverride = titleOverride && r.names.includes(titleOverride) ? titleOverride : null;
   selected = poa;
   map.setFilter('pc-sel', ['==', ['get', 'poa'], poa]);
-  const k = state.d + state.b, title = titleOverride || r.names[0] || 'Postcode ' + poa;
+  const k = S().d + S().b, title = titleOverride || r.names[0] || 'Postcode ' + poa;
   const others = r.names.filter((n) => n !== title);
   const res = typicalResult(r);
   const be = res ? breakEvenFor(r) : null;
@@ -136,14 +158,14 @@ function renderPanel(poa, scrollTop = true) {
       <button class="icon-btn x" id="closeP" aria-label="Close">✕</button>
       <h2>${title}</h2><div class="sub">NSW ${poa}${others.length ? ' · ' + others.join(', ') : ''}</div>
       <div class="kpis">
-        <div class="kpi"><div class="k">Rent · ${D_LABEL[state.d]} ${state.b === 't' ? '' : B_LABEL[state.b]}</div><div class="v">${r['r_' + k] ? '$' + r['r_' + k] : '–'}</div><div class="d ${(r['rg_' + k] || 0) >= 0 ? 'up' : 'down'}">${r['rg_' + k] != null ? sgn(r['rg_' + k]) + ' 1y' : '&nbsp;'}</div></div>
-        <div class="kpi"><div class="k">Gross yield</div><div class="v">${pct(r['y_' + k], 2)}${r['yl_' + k] ? '*' : ''}</div><div class="d faint">${priceFmt(r['p_' + PRICE_FOR[state.d]])} median</div></div>
+        <div class="kpi"><div class="k">Rent · ${D_LABEL[S().d]} ${S().b === 't' ? '' : B_LABEL[S().b]}</div><div class="v">${r['r_' + k] ? '$' + r['r_' + k] : '–'}</div><div class="d ${(r['rg_' + k] || 0) >= 0 ? 'up' : 'down'}">${r['rg_' + k] != null ? sgn(r['rg_' + k]) + ' 1y' : '&nbsp;'}</div></div>
+        <div class="kpi"><div class="k">Gross yield</div><div class="v">${pct(r['y_' + k], 2)}${r['yl_' + k] ? '*' : ''}</div><div class="d faint">${priceFmt(r['p_' + PRICE_FOR[S().d]])} median</div></div>
         <div class="kpi"><div class="k">Cash flow</div><div class="v ${res && res.weekly < 0 ? 'down' : 'up'}">${res ? sgnMoney(res.weekly) : '–'}</div><div class="d faint">per week, pre-tax</div></div>
       </div>${g}
       <div class="tabs" id="tabs"><button data-t="overview">Overview</button><button data-t="trends">Trends</button><button data-t="calc">Calculator</button></div>
     </div><div id="tabBody"></div>`;
   $('closeP').onclick = closePanel;
-  $('tabs').querySelectorAll('button').forEach((b) => { b.classList.toggle('on', b.dataset.t === state.tab); b.onclick = () => { state.tab = b.dataset.t; renderPanel(poa); if (isMobile()) $('panel').classList.remove('peek'); }; });
+  $('tabs').querySelectorAll('button').forEach((b) => { b.classList.toggle('on', b.dataset.t === state.tab); b.classList.toggle('lockd', !member() && b.dataset.t !== 'overview'); b.onclick = () => { state.tab = b.dataset.t; renderPanel(poa); if (isMobile()) $('panel').classList.remove('peek'); }; });
   charts.forEach((c) => c.destroy()); charts = [];
   if (state.tab === 'overview') renderOverview(r);
   else if (state.tab === 'trends') renderTrends(poa);
@@ -159,13 +181,14 @@ async function aihwSection(poa) {
   const el = $('sa2ctx'); if (!el || selected !== poa) return;
   const L = AIHW.sa2[poa];
   const st = AIHW.state.cra_stress, n = st.years.length - 1;
-  el.innerHTML = `<h3>Rent Assistance nearby · AIHW</h3>
+  const html = `<h3>Rent Assistance nearby · AIHW</h3>
     <div class="caveat" style="margin:0 0 8px"><span class="pill neu">SA2-level, not postcode</span> Income units receiving Commonwealth Rent Assistance in ABS SA2 areas overlapping this postcode, at June. SA2 and postcode boundaries differ, so these are not added up.</div>
     ${L ? `<table class="t"><tr><th>SA2 area</th><th>Overlap</th><th>2023</th><th>2025</th><th>Change</th></tr>${L.map((a) => `<tr><td>${a[1]}</td><td class="faint">${Math.round(a[2] * 100)}%</td><td>${a[3]?.toLocaleString('en-AU') ?? '–'}</td><td>${a[5]?.toLocaleString('en-AU') ?? '–'}</td><td class="${a[5] >= a[3] ? 'up' : 'down'}">${a[3] ? sgn(100 * (a[5] / a[3] - 1)) : '–'}</td></tr>`).join('')}</table>` : '<div class="empty">No SA2 Rent Assistance figures for this postcode.</div>'}
     <div class="caveat">NSW state-wide, ${st.nsw[n]}% of Rent Assistance recipients were in rental stress in June ${st.years[n]} (state-level). ${AIHW.meta.cra_attribution} CC BY 4.0. Counts rounded to the nearest 5 by AIHW.</div>`;
+  el.innerHTML = member() ? html : `<h3>Rent Assistance nearby · AIHW</h3>` + MSAuth.lock(html.replace(/^<h3>.*?<\/h3>/, ''), { title: 'SA2-level Rent Assistance', text: 'Free account: AIHW Rent Assistance counts for the SA2 areas around this postcode.', reason: 'Create a free account for SA2-level AIHW housing data.' });
 }
 function renderOverview(r) {
-  $('tabBody').innerHTML = `<div class="p-sec"><h3>Rent by bedrooms</h3>${rentMatrix(r)}</div>
+  $('tabBody').innerHTML = `<div class="p-sec"><h3>Rent by bedrooms</h3>${member() ? rentMatrix(r) : MSAuth.lock(rentMatrix(r), { title: 'Bedroom-level rents', text: 'Free account: rent for units, houses and townhouses by 1, 2, 3 and 4+ bedrooms.', reason: LOCK_MSG.b })}</div>
     <div class="p-sec"><h3>Sales</h3>${salesTable(r)}</div>
     <div class="p-sec"><h3>People · Census 2021</h3><div class="kv">
       <span>Population</span><b>${r.c_pop?.toLocaleString('en-AU') ?? '–'}</b><span>Median age</span><b>${r.c_age ?? '–'}</b>
@@ -178,9 +201,9 @@ function renderOverview(r) {
 // ---------- trends ----------
 const qToTs = (q) => Date.UTC(+q.slice(0, 4), (+q.slice(-1)) * 3 - 2, 15) / 1000;
 async function renderTrends(poa) {
-  $('tabBody').innerHTML = `<div class="p-sec"><h3>Median weekly rent · ${D_LONG[state.d]}</h3><div class="chart" id="ch1"></div>
+  gatedHost('9 years of trends', LOCK_MSG.trends).innerHTML = `<div class="p-sec"><h3>Median weekly rent · ${D_LONG[S().d]}</h3><div class="chart" id="ch1"></div>
     <h3>Median sale price</h3><div class="chart" id="ch2"></div>
-    <h3>Gross yield · ${D_LONG[state.d]}</h3><div class="chart" id="ch3"></div>
+    <h3>Gross yield · ${D_LONG[S().d]}</h3><div class="chart" id="ch3"></div>
     <div class="caveat">Quarterly medians from ${META.n_quarters_rent} DCJ Rent &amp; Sales reports (rents ${META.qlabels[META.quarters.indexOf(META.rent_first)]}–${META.qlabels[META.quarters.indexOf(META.rent_q)]}). Small samples make individual quarters noisy; a few isolated spikes (&gt;2.5× neighbours) are removed. Yield uses same-quarter rent and price.</div></div>`;
   const ts = await HM.load(`data/ts/${poa}.json`);
   if (selected !== poa || state.tab !== 'trends') return;
@@ -197,21 +220,21 @@ async function renderTrends(poa) {
         ...series.map((s, i) => ({ label: s.label, stroke: s.color || pal[i], width: s.w || 1.8, spanGaps: true, points: { show: false }, value: (u, v) => v == null ? '–' : fmt(v) }))] },
       [x, ...series.map((s) => s.data)], $(el)));
   };
-  const rs = ['t', '1', '2', '3', '4'].map((b, i) => ts.r[state.d + b] && { label: B_LABEL[b], data: ts.r[state.d + b], color: i === 0 ? (dark ? '#e6e9f2' : '#0f172a') : pal[i], w: i === 0 ? 2.4 : 1.5 }).filter(Boolean);
+  const rs = ['t', '1', '2', '3', '4'].map((b, i) => ts.r[S().d + b] && { label: B_LABEL[b], data: ts.r[S().d + b], color: i === 0 ? (dark ? '#e6e9f2' : '#0f172a') : pal[i], w: i === 0 ? 2.4 : 1.5 }).filter(Boolean);
   mk('ch1', rs, (v) => '$' + Math.round(v));
   mk('ch2', ['A', 'S', 'N'].map((s, i) => ts.p[s] && { label: P_LABEL[s], data: ts.p[s], color: [dark ? '#e6e9f2' : '#0f172a', '#06b6d4', '#f59e0b'][i] }).filter(Boolean), (v) => v >= 1e6 ? '$' + (v / 1e6).toFixed(1) + 'm' : '$' + Math.round(v / 1000) + 'k');
-  mk('ch3', [...new Set([state.d + state.b, state.d + 't'])].map((k, i) => ts.y[k] && { label: B_LABEL[k[1]], data: ts.y[k], color: ['#22c55e', '#4f46e5'][i] }).filter(Boolean), (v) => v.toFixed(1) + '%');
+  mk('ch3', [...new Set([S().d + S().b, S().d + 't'])].map((k, i) => ts.y[k] && { label: B_LABEL[k[1]], data: ts.y[k], color: ['#22c55e', '#4f46e5'][i] }).filter(Boolean), (v) => v.toFixed(1) + '%');
 }
 
 // ---------- calculator ----------
 function renderCalc(r) {
-  const x = HM.typical(CFG, r, state.d, state.b) || HM.typical(CFG, r, state.d, 't') || HM.typical(CFG, r, 'A', 't') ||
-    { price: 800000, rent: 700, lvr: CFG.lvr_pct, rate: CFG.rate.value, term: CFG.term_years, repay: CFG.repayment, vacWeeks: CFG.vacancy_weeks, mgmtPct: CFG.mgmt_pct, maintPct: CFG.maintenance_pct, ...CFG.costs[state.d], landTax: 0, deprec: 0, taxRate: 37, medicare: CFG.medicare_pct };
+  const x = HM.typical(CFG, r, S().d, S().b) || HM.typical(CFG, r, S().d, 't') || HM.typical(CFG, r, 'A', 't') ||
+    { price: 800000, rent: 700, lvr: CFG.lvr_pct, rate: CFG.rate.value, term: CFG.term_years, repay: CFG.repayment, vacWeeks: CFG.vacancy_weeks, mgmtPct: CFG.mgmt_pct, maintPct: CFG.maintenance_pct, ...CFG.costs[S().d], landTax: 0, deprec: 0, taxRate: 37, medicare: CFG.medicare_pct };
   Object.assign(x, assumptions());
   const f = (id, label, v, step = 1, extra = '') => `<label class="field ${extra}">${label}<input class="input num" id="${id}" type="number" step="${step}" value="${v}"></label>`;
   const rateDate = new Date(CFG.rate.date).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
-  $('tabBody').innerHTML = `<div class="p-sec" id="calc">
-    <div class="small muted">Prefilled with this postcode's medians (${D_LONG[state.d]}, ${B_LABEL[state.b]}) and the typical-investor assumptions. Change anything.</div>
+  gatedHost('Full investment calculator', LOCK_MSG.calc).innerHTML = `<div class="p-sec" id="calc">
+    <div class="small muted">Prefilled with this postcode's medians (${D_LONG[S().d]}, ${B_LABEL[S().b]}) and the typical-investor assumptions. Change anything.</div>
     <div class="calc-grp">Purchase &amp; loan</div>
     <div class="calc-grid">
       ${f('c_price', 'Purchase price $', Math.round(x.price), 10000)}${f('c_lvr', 'LVR % (deposit ' + (100 - x.lvr) + '%)', x.lvr, 1)}
@@ -312,9 +335,13 @@ function setupSearch() {
 
 function setSeg(id, key) {
   const el = $(id);
-  const paintSeg = () => el.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === state[key]));
+  const paintSeg = () => el.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === S()[key]));
   paintSeg();
-  el.addEventListener('click', (e) => { const v = e.target.dataset.v; if (!v) return; state[key] = v; paintSeg(); recolour(); });
+  el.addEventListener('click', (e) => {
+    const btn = e.target.closest('button'), v = btn && btn.dataset.v; if (!v) return;
+    if (btn.classList.contains('lockd')) { MSAuth.open('signup', LOCK_MSG[key]); return; }
+    state[key] = v; paintSeg(); recolour();
+  });
 }
 
 function buildMap() {
@@ -355,6 +382,8 @@ async function init() {
   $('nav').innerHTML = HM.nav('map');
   HM.initTheme(() => { window.mapReady = false; buildMap(); if (selected) renderPanel(selected, false); });
   [STATS, META, CFG] = await Promise.all(['data/stats.json', 'data/meta.json', 'data/config.json'].map(HM.load));
+  await MSAuth.ready;
+  MSAuth.onAuthChange(() => { applyGates(); if (map && map.isStyleLoaded()) recolour(false); if (selected) renderPanel(selected, false); });
   const t = $('time'); t.max = lastQ(); t.value = qi ?? lastQ();
   t.addEventListener('input', () => { qi = +t.value; recolourSoon(false); });
   $('play').addEventListener('click', () => {
@@ -362,7 +391,7 @@ async function init() {
     $('play').textContent = '❚❚'; qi = 0; t.value = 0;
     playing = setInterval(() => { qi = Math.min(lastQ(), (qi ?? 0) + 1); t.value = qi; recolour(false); if (qi >= lastQ()) { clearInterval(playing); playing = null; $('play').textContent = '▶'; } }, 650);
   });
-  setSeg('metric', 'm'); setSeg('dwelling', 'd'); setSeg('beds', 'b');
+  setSeg('metric', 'm'); setSeg('dwelling', 'd'); setSeg('beds', 'b'); applyGates();
   $('filtersToggle').addEventListener('click', () => $('filters').classList.toggle('collapsed'));
   if (isMobile()) $('filters').classList.add('collapsed');
   $('handle').addEventListener('click', () => $('panel').classList.toggle('peek'));

@@ -99,3 +99,37 @@ interest rate at which the tax result would be $0 (`HM.breakEven`, bisection on 
   (CRA.2b). These are shown in the map panel and labelled **SA2-level, not postcode**.
 
 See DATA_SOURCES.md for exact URLs, licence, attribution and the items deliberately left out.
+
+## Accounts (free sign-up gate)
+
+`web/auth.js` exposes one interface, `window.MSAuth`, whatever the backend: `ready`, `getUser()`, `current()`,
+`isMember()`, `signUp(email, name)`, `signIn(email)`, `signOut()`, `onAuthChange(cb)`, plus UI helpers
+`open(tab, reason)` and `lock(html, opts)` (blurred preview + unlock card). Pages only read `MSAuth.isMember()`.
+
+**Open without an account:** landing page, top-5 standouts, AIHW NSW state cards; the map's headline metrics (Rent,
+Yield, Price, Cash flow, Gearing, Income) for All dwellings / All beds at the latest quarter, search and Overview
+summary cards; top 5 rows of every Insights ranking; Pricing, About, Data & method, Disclaimer and Privacy.
+
+**Free account unlocks:** dwelling and bedroom filters plus the bedroom rent table; rent-change maps; the 2017–2026
+time slider and the Trends tab; the full Calculator; SA2-level AIHW data in the panel; Insights rows 6+ and all
+filters. Locked controls show a lock and open the sign-up modal. The URL keeps what was asked for (e.g. `d=U&b=2`),
+so signing in restores it immediately.
+
+**Demo mode** (default): used when `SUPABASE_URL` / `SUPABASE_ANON_KEY` are empty in `web/config.js` and there is
+no `auth` block in `data/config.json`. Accounts live in `localStorage` (`ms-demo-users`, `ms-demo-session`) and
+nothing leaves the browser. The modal has a one-click demo account (`demo@marketstats.local`) and says
+"Demo mode — stored locally in your browser". Clear the site's data to reset.
+
+**Switching to Supabase:**
+1. Create a project at supabase.com (choose the Sydney region). Under Authentication → Providers, enable Email
+   (magic link). Under Authentication → URL Configuration, add your site URL(s) as redirect URLs, e.g.
+   `https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/`.
+2. Paste the project URL and anon public key into `web/config.js`:
+   `window.MS_CONFIG = { SUPABASE_URL: 'https://xxxx.supabase.co', SUPABASE_ANON_KEY: 'eyJ...' };`
+   Alternatively, add `"auth": {"supabase_url": "...", "supabase_anon_key": "..."}` to `data/config.json`.
+3. `make publish`. The SupabaseAdapter in `auth.js` loads supabase-js v2 and uses passwordless email links
+   (`signInWithOtp`), storing the optional name in `user_metadata.name`. The demo button is hidden in this mode.
+
+Note: the gate is a product/UX gate, not data protection. The static site still serves every JSON file publicly,
+which is fine for open CC BY data. Anything paid later must be served from an authenticated API.
+Privacy policy draft: `web/privacy.html`.

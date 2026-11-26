@@ -18,3 +18,5 @@
 .empty{padding:16px 0;color:var(--faint);font-size:13px}
 @media (max-width:900px){.grid{grid-template-columns:1fr}.stats-row{grid-template-columns:repeat(2,1fr)}.page-head h1{font-size:30px}.filters{top:56px}}
 @media (max-width:520px){.wrap{padding:0 14px}.board .spark{display:none}.filters{position:static}}
+.board table.t td:nth-child(2){text-align:left}
+.board .gate{min-height:210px;margin-top:-1px}.board .gate-cta{background:linear-gradient(180deg,transparent,var(--surface) 45%)}
