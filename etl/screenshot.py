@@ -47,6 +47,7 @@ with sync_playwright() as p:
         shot(d, "insights.html?d=U&b=t&min=50", f"{th}-06-insights-desktop.png", PAGEW, full=True, delay=1500, theme=th)
         for pg_ in ("about", "disclaimer", "data"):
             shot(d, f"{pg_}.html", f"{th}-07-{pg_}-desktop.png", PAGEW, full=True, delay=800, theme=th)
+        shot(d, "pricing.html", f"{th}-08-pricing-desktop.png", PAGEW, full=True, delay=800, theme=th)
         m = page(b, MOB, th)
         shot(m, "index.html", f"{th}-11-landing-mobile.png", LANDW, theme=th)
         shot(m, "index.html", f"{th}-12-landing-mobile-menu.png", LANDW, extra=open_menu, theme=th)
@@ -54,6 +55,7 @@ with sync_playwright() as p:
         shot(m, "map.html?m=gearing&d=U&b=t&p=2127&tab=calc", f"{th}-14-map-mobile-sheet.png", extra=open_sheet, delay=4000, theme=th)
         shot(m, "map.html?m=rent&d=U&b=2&p=2042&tab=overview", f"{th}-15-map-mobile-sa2.png", extra=lambda pg: (open_sheet(pg), pg.locator("#sa2ctx").scroll_into_view_if_needed(), pg.wait_for_timeout(500)), delay=4000, theme=th)
         shot(m, "insights.html", f"{th}-16-insights-mobile.png", PAGEW, delay=1500, theme=th)
+        shot(m, "pricing.html", f"{th}-18-pricing-mobile.png", PAGEW, delay=600, theme=th)
         for pg_ in ("about", "disclaimer", "data"):
             shot(m, f"{pg_}.html", f"{th}-17-{pg_}-mobile.png", PAGEW, delay=600, theme=th)
     # first visit with no saved choice: follows prefers-color-scheme
@@ -67,6 +69,13 @@ with sync_playwright() as p:
     got = t.evaluate("[document.documentElement.dataset.theme, localStorage.getItem('ms-theme')]")
     print("toggle persisted:", got)
     if got != ["dark", "dark"]: errors.append(f"theme toggle did not persist: {got}")
+    # pricing interactions: annual toggle + waitlist CTA
+    pr = page(b, DESK)
+    pr.goto(BASE + "pricing.html"); pr.wait_for_function(PAGEW)
+    pr.click("#bill button[data-v=y]"); got = pr.locator(".tier.featured .amt").inner_text(); print("annual investor:", got)
+    if got != "A$190": errors.append(f"annual toggle shows {got}")
+    pr.click("a[data-plan=Pro]"); pr.wait_for_timeout(800); print("waitlist plan:", pr.locator("#wlPlan").inner_text())
+    pr.screenshot(path=str(OUT / "light-08-pricing-annual-desktop.png")); print("saved light-08-pricing-annual-desktop.png")
     # social preview image (og:image) from the landing hero
     o = page(b, dict(viewport={"width": 1200, "height": 630}))
     o.goto(BASE + "index.html"); o.wait_for_function(LANDW, timeout=90000); o.wait_for_timeout(2500)

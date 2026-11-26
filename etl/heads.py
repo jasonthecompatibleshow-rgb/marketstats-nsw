@@ -8,6 +8,7 @@ PAGES = {
     "insights.html": ("Insights · Top movers · MarketStats NSW", "Free NSW rental analytics: biggest rent rises and falls, highest yields, yield changes, cash flow and NSW housing context by postcode."),
     "about.html": ("About · MarketStats NSW", "What MarketStats is, who it's for, the official public data it's built on, and how often it updates."),
     "disclaimer.html": ("Disclaimer · MarketStats NSW", "MarketStats provides general information only. Read about data limitations, median and yield caveats and modelled gearing assumptions."),
+    "pricing.html": ("Pricing & plans · MarketStats NSW", "MarketStats is free for every NSW postcode. Investor and Pro plans with watchlists, alerts, exports and white-label reports are coming soon."),
     "data.html": ("Data sources & methodology · MarketStats NSW", "Every dataset MarketStats uses, its licence and attribution, and how rents, yields, trends and gearing are calculated."),
 }
 THEME = "<script>(function(){var t;try{t=localStorage.getItem('ms-theme')}catch(e){}document.documentElement.dataset.theme=t||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')})()</script>"

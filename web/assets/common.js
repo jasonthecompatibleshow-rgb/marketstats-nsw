@@ -138,7 +138,7 @@ const HM = (() => {
   }
   const classOf = (v, breaks) => { let i = 0; while (i < breaks.length && v >= breaks[i]) i++; return i; };
 
-  const LINKS = [['map', 'map.html', 'Map'], ['insights', 'insights.html', 'Insights'], ['data', 'data.html', 'Data & method'], ['about', 'about.html', 'About'], ['disclaimer', 'disclaimer.html', 'Disclaimer']];
+  const LINKS = [['map', 'map.html', 'Map'], ['insights', 'insights.html', 'Insights'], ['data', 'data.html', 'Data & method'], ['pricing', 'pricing.html', 'Pricing'], ['about', 'about.html', 'About'], ['disclaimer', 'disclaimer.html', 'Disclaimer']];
   function nav(active) {
     return `<a class="brand" href="index.html" aria-label="${BRAND} home">${LOGO}<span class="wordmark">Market<span>Stats</span></span><span class="scope" title="Coverage: New South Wales">NSW</span></a>
       <nav class="links" aria-label="Main">${LINKS.map(([k, h, t]) => `<a href="${h}" class="${active === k ? 'on' : ''}"${active === k ? ' aria-current="page"' : ''}>${t}</a>`).join('')}</nav>
@@ -174,7 +174,7 @@ const HM = (() => {
     const rate = CFG ? ` (${new Date(CFG.rate.date).toLocaleDateString('en-AU', { month: 'short', year: 'numeric' })})` : '';
     return `<div class="f-top"><div class="f-brand"><a class="brand" href="index.html">${LOGO}<span class="wordmark">Market<span>Stats</span></span><span class="scope">NSW</span></a>
         <p>Free rent, yield, gearing and trend analytics for every NSW postcode, built on official public data.</p></div>
-      <div class="f-col"><b>Explore</b><a href="map.html">Map</a><a href="insights.html">Insights</a><a href="map.html?m=gearing&d=U&b=2">Gearing map</a></div>
+      <div class="f-col"><b>Explore</b><a href="map.html">Map</a><a href="insights.html">Insights</a><a href="map.html?m=gearing&d=U&b=2">Gearing map</a><a href="pricing.html">Pricing</a></div>
       <div class="f-col"><b>Information</b><a href="about.html">About</a><a href="data.html">Data &amp; method</a><a href="disclaimer.html">Disclaimer</a><a href="about.html#contact">Contact &amp; feedback</a></div></div>
       <div class="f-legal">Data: © State of NSW (Department of Communities and Justice), <a href="https://dcj.nsw.gov.au/about-us/families-and-communities-statistics/housing-rent-and-sales/rent-and-sales-report.html" target="_blank" rel="noopener">Rent and Sales Report</a>, CC BY 4.0${per}. Boundaries and Census © Australian Bureau of Statistics, CC BY 4.0. Interest rates: Reserve Bank of Australia, CC BY 4.0${rate}. Housing assistance indicators: based on Australian Institute of Health and Welfare material, CC BY 4.0. Basemap © OpenMapTiles © OpenStreetMap contributors via OpenFreeMap. <a href="data.html#sources">Full attribution</a>.</div>
       <div class="f-legal"><b>General information only.</b> Not financial, tax, investment or legal advice. MarketStats is independent and is not affiliated with or endorsed by any government agency. <a href="disclaimer.html">Read the disclaimer</a>.</div>`;
