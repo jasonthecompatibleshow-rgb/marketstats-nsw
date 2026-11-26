@@ -1,0 +1,66 @@
+# Quarterly data refresh + deploy of web/ to Cloudflare Pages.
+# Needs repository secrets CLOUDFLARE_API_TOKEN (Account > Cloudflare Pages > Edit) and CLOUDFLARE_ACCOUNT_ID.
+# Without them the workflow still refreshes and checks the data, then skips the deploy step.
+name: Refresh data and deploy
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 00:00 UTC on 1 Feb, May, Aug and Nov (11:00 AEDT / 10:00 AEST), after each DCJ Rent and Sales release.
+    - cron: "0 0 1 2,5,8,11 *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT || 'marketstats' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install tippecanoe
+        run: sudo apt-get update -q && sudo apt-get install -y -q tippecanoe
+
+      # Big ABS boundary/census zips and archived DCJ quarters are kept between runs.
+      - name: Cache raw downloads
+        uses: actions/cache@v4
+        with:
+          path: data-raw
+          key: data-raw-${{ github.run_id }}
+          restore-keys: data-raw-
+
+      - name: Refresh data (latest DCJ quarter, RBA rate, AIHW) and rebuild
+        run: make refresh
+
+      - name: Sanity check
+        run: make check
+
+      - name: Verify build output
+        run: |
+          test -s web/data/stats.json && test -s web/data/meta.json && test -s web/data/postcodes.pmtiles
+          python -c "import json;m=json.load(open('web/data/meta.json'));print('rent quarter',m.get('rent_q'),'tiles',m.get('tiles'))"
+
+      - name: Deploy to Cloudflare Pages
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy web --project-name=${{ env.CF_PAGES_PROJECT }} --branch=main --commit-dirty=true
+
+      - name: Deploy skipped
+        if: env.CLOUDFLARE_API_TOKEN == '' || env.CLOUDFLARE_ACCOUNT_ID == ''
+        run: echo "::notice::CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID secrets not set - built and checked, deploy skipped."

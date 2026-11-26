@@ -9,9 +9,10 @@
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0b0f19" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta property="og:site_name" content="MarketStats"><meta property="og:type" content="website"><meta property="og:title" content="About · MarketStats NSW"><meta property="og:description" content="What MarketStats is, who it&#x27;s for, the official public data it&#x27;s built on, and how often it updates."><meta property="og:image" content="og.png"><meta name="twitter:card" content="summary_large_image">
+<meta property="og:site_name" content="MarketStats"><meta property="og:type" content="website"><meta property="og:title" content="About · MarketStats NSW"><meta property="og:description" content="What MarketStats is, who it&#x27;s for, the official public data it&#x27;s built on, and how often it updates."><meta property="og:image" content="https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/about"><meta property="og:url" content="https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/about">
 <!--head:end-->
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="vendor/inter@4.1/inter.css">
 <link rel="stylesheet" href="assets/site.css"><link rel="stylesheet" href="assets/pages.css">
 </head>
 <body data-page="about">
@@ -47,8 +48,14 @@
     <p>MarketStats is independent. It is not affiliated with, sponsored by or endorsed by the NSW Government, the Australian Government or any agency whose data it uses. It does not sell property, loans or advice, and it is general information only. Please read the <a href="disclaimer.html">disclaimer</a>.</p>
 
     <h2 id="contact">Contact &amp; feedback</h2>
-    <div class="callout warn"><strong>Placeholder.</strong> A contact address and feedback form are coming soon. Nothing on this page sends or stores your details yet.</div>
-    <p>Spotted a number that looks wrong, or want a feature? We'd love to hear about it once feedback opens. Data corrections are best directed to the original publisher, linked on the <a href="data.html#sources">Data sources</a> page.</p>
+    <p>Spotted a number that looks wrong, or want a feature? Send us a note. Data corrections are best sent to the original publisher too, linked on the <a href="data.html#sources">Data sources</a> page.</p>
+    <form class="card contact-form" id="contactForm" novalidate>
+      <div class="cf-row"><label class="field">Name<input class="input" id="cfName" maxlength="100" autocomplete="name" required></label>
+      <label class="field">Email<input class="input" id="cfEmail" type="email" maxlength="254" autocomplete="email" required></label></div>
+      <label class="field">Message<textarea class="input" id="cfMsg" rows="5" maxlength="4000" required></textarea></label>
+      <div class="cf-foot"><button class="btn btn-primary" type="submit">Send message</button><div class="small faint" id="cfOut"></div></div>
+      <p class="small faint" style="margin:0">We'll use your details only to reply. See our <a href="privacy.html">privacy policy</a>.</p>
+    </form>
   </article>
 </main>
 <footer class="footer"><div class="wrap" id="foot"></div></footer>
@@ -56,5 +63,6 @@
 <script src="auth.js"></script>
 <script src="assets/common.js"></script>
 <script src="assets/info.js"></script>
+<script src="assets/contact.js"></script>
 </body>
 </html>

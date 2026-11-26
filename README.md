@@ -43,6 +43,19 @@ make refresh    # force re-download of the newest DCJ quarter, RBA and AIHW tabl
 
 Needs Python 3.11+, `tippecanoe` (apt `tippecanoe`; if missing, the build falls back to simplified GeoJSON) and `make`.
 
+## Production hosting
+
+- **Self-hosted libraries:** MapLibre GL 4.7.1, PMTiles 3.2.1, uPlot 1.6.31, supabase-js 2.119.2 and the Inter 4.1
+  variable font live in `web/vendor/` (licences + SHA-256 in `web/vendor/LICENSES.txt`). No CDN is requested at
+  runtime; only OpenFreeMap basemap tiles/styles are external. The test suite fails on any CDN request.
+- **Cloudflare Pages:** `web/_headers` (security headers, immutable `/vendor/*`, 1-day Range/CORS for the PMTiles,
+  5-minute revalidating HTML/JSON), `web/404.html`, `web/robots.txt`, `web/sitemap.xml`.
+- **Site URL:** `etl/site.json`, set by `python scripts/set_site_url.py https://<domain>`; `etl/heads.py` writes
+  canonical/og:url/og:image, the sitemap and robots.txt.
+- **Deploy:** `.github/workflows/deploy.yml` (manual + quarterly): `make refresh`, `make check`, then
+  `wrangler pages deploy web` when the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets exist.
+- Full runbook: **LAUNCH.md**.
+
 ## Layout
 
 ```
@@ -115,21 +128,16 @@ time slider and the Trends tab; the full Calculator; SA2-level AIHW data in the 
 filters. Locked controls show a lock and open the sign-up modal. The URL keeps what was asked for (e.g. `d=U&b=2`),
 so signing in restores it immediately.
 
-**Demo mode** (default): used when `SUPABASE_URL` / `SUPABASE_ANON_KEY` are empty in `web/config.js` and there is
-no `auth` block in `data/config.json`. Accounts live in `localStorage` (`ms-demo-users`, `ms-demo-session`) and
-nothing leaves the browser. The modal has a one-click demo account (`demo@marketstats.local`) and says
-"Demo mode — stored locally in your browser". Clear the site's data to reset.
+**Live mode** (default now): `web/config.js` holds the `marketstats-nsw` Supabase project URL and publishable key
+(public by design; RLS protects data). `auth.js` loads the self-hosted supabase-js (`web/vendor/supabase-js@2.119.2/`)
+and signs users in with passwordless magic links (`emailRedirectTo` = the current page). No demo UI is shown.
+The waitlist (index, pricing) and contact (about) forms POST to `/rest/v1/waitlist` and `/rest/v1/contact_messages`
+via `MSAuth.wireForm` (publishable key on the `apikey` header only). Schema: `supabase/schema.sql`.
 
-**Switching to Supabase:**
-1. Create a project at supabase.com (choose the Sydney region). Under Authentication → Providers, enable Email
-   (magic link). Under Authentication → URL Configuration, add your site URL(s) as redirect URLs, e.g.
-   `https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/`.
-2. Paste the project URL and anon public key into `web/config.js`:
-   `window.MS_CONFIG = { SUPABASE_URL: 'https://xxxx.supabase.co', SUPABASE_ANON_KEY: 'eyJ...' };`
-   Alternatively, add `"auth": {"supabase_url": "...", "supabase_anon_key": "..."}` to `data/config.json`.
-3. `make publish`. The SupabaseAdapter in `auth.js` loads supabase-js v2 and uses passwordless email links
-   (`signInWithOtp`), storing the optional name in `user_metadata.name`. The demo button is hidden in this mode.
+**Demo mode:** set `DEMO_MODE: true` in `web/config.js` (or empty the Supabase values). Accounts then live in
+`localStorage` (`ms-demo-users`, `ms-demo-session`), nothing leaves the browser, the modal offers a one-click demo
+account (`demo@marketstats.local`), and the forms show an honest "nothing was sent" note. The headless suite runs the
+gate UX tests in demo mode, the live UI against a mocked Supabase API, and a smoke test with the real config.
 
-Note: the gate is a product/UX gate, not data protection. The static site still serves every JSON file publicly,
-which is fine for open CC BY data. Anything paid later must be served from an authenticated API.
-Privacy policy draft: `web/privacy.html`.
+See **LAUNCH.md** for the Supabase redirect URLs and custom SMTP setup.
+

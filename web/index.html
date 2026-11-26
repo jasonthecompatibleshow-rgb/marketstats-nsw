@@ -9,13 +9,14 @@
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0b0f19" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta property="og:site_name" content="MarketStats"><meta property="og:type" content="website"><meta property="og:title" content="MarketStats NSW · Rent, yield &amp; gearing for every NSW postcode"><meta property="og:description" content="Free NSW property analytics: rents by bedroom, gross yields, gearing and nine years of trends for every postcode, from official public data."><meta property="og:image" content="og.png"><meta name="twitter:card" content="summary_large_image">
+<meta property="og:site_name" content="MarketStats"><meta property="og:type" content="website"><meta property="og:title" content="MarketStats NSW · Rent, yield &amp; gearing for every NSW postcode"><meta property="og:description" content="Free NSW property analytics: rents by bedroom, gross yields, gearing and nine years of trends for every postcode, from official public data."><meta property="og:image" content="https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/"><meta property="og:url" content="https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/">
 <!--head:end-->
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<link rel="stylesheet" href="vendor/inter@4.1/inter.css">
+<link rel="stylesheet" href="vendor/maplibre-gl@4.7.1/maplibre-gl.css">
 <link rel="stylesheet" href="assets/site.css"><link rel="stylesheet" href="assets/pages.css"><link rel="stylesheet" href="assets/landing.css">
-<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-<script src="https://unpkg.com/pmtiles@3.2.1/dist/pmtiles.js"></script>
+<script src="vendor/maplibre-gl@4.7.1/maplibre-gl.js"></script>
+<script src="vendor/pmtiles@3.2.1/pmtiles.js"></script>
 </head>
 <body>
 <header class="nav" id="nav"></header>
@@ -69,7 +70,7 @@
     <form id="wl" class="wl-form" novalidate>
       <input class="input" type="email" id="wlEmail" placeholder="you@example.com" aria-label="Email" required>
       <button class="btn btn-primary" type="submit">Join the waitlist</button>
-      <div class="small faint" id="wlMsg"><span class="pill warn">Placeholder</span> No backend yet. Nothing is sent or stored.</div>
+      <div class="small faint" id="wlMsg"></div>
     </form>
   </section>
 

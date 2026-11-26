@@ -1,5 +1,6 @@
 """Download raw datasets into data-raw/. Idempotent: skips files already present
-(use --force to re-download). The DCJ Rent and Sales page is scraped so the
+(--force re-downloads the files that change between releases: current DCJ tables and the AIHW
+workbooks. Static ABS zips and archived DCJ quarters in hist/ are kept, so CI caches stay valid). The DCJ Rent and Sales page is scraped so the
 latest quarter's tables are always picked up."""
 import json, re, sys, zipfile, datetime, pathlib, urllib.request
 
@@ -29,7 +30,8 @@ STATIC = {
 
 
 def fetch(url, dest):
-    if dest.exists() and dest.stat().st_size > 0 and not FORCE:
+    force = FORCE and dest.suffix != ".zip" and dest.parent.name != "hist"
+    if dest.exists() and dest.stat().st_size > 0 and not force:
         print(f"  skip (exists) {dest.name}")
         return
     print(f"  get {url}")

@@ -174,3 +174,7 @@ html.modal-open{overflow:hidden}
 @media (max-width:640px){.auth-slot .auth-up{display:none}.acct-name,.acct-btn .caret{display:none}.acct-btn{padding:3px}.auth-slot .btn-sm{padding:7px 12px}}
 @media (max-width:400px){.nav .scope{display:none}}
 .filter-note{flex:1 1 100%;font-size:12.5px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}.filter-note[hidden]{display:none}
+.contact-form{display:grid;gap:12px;padding:20px 22px;margin-top:14px}.cf-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.contact-form textarea{resize:vertical;min-height:110px;font:14px/1.5 var(--font)}.cf-foot{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+@media (max-width:520px){.cf-row{grid-template-columns:1fr}}
+.live-only{display:none}.ms-live .live-only{display:revert}.ms-live .demo-only{display:none}

@@ -11,6 +11,9 @@
      onAuthChange(cb)            cb(user|null) on every sign-in / sign-out, in this tab and other tabs
      open(tab, reason)           open the sign-up ('signup') or sign-in ('signin') modal
      lock(innerHTML, opts)       HTML for a blurred, locked preview with an unlock call to action
+     configured()                -> boolean: Supabase URL + anon key are set (live mode)
+     insert(table, row)          -> Promise: INSERT into a Supabase table via the REST API (RLS insert-only tables)
+     wireForm(form, opts)        submit a form to insert(); in demo mode shows an honest "nothing was sent" note
    Adapters: DemoAdapter (localStorage) and SupabaseAdapter (magic-link email via supabase-js v2).
    Demo mode is used when no SUPABASE_URL / SUPABASE_ANON_KEY is set in web/config.js or data/config.json → auth. */
 (() => {
@@ -63,7 +66,7 @@
     const toUser = (u) => u && { id: u.id, email: u.email, name: u.user_metadata?.name || u.email.split('@')[0], plan: u.app_metadata?.plan || 'free' };
     const loadLib = () => new Promise((res, rej) => {
       if (window.supabase?.createClient) return res();
-      const s = document.createElement('script'); s.src = 'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js';
+      const s = document.createElement('script'); s.src = 'vendor/supabase-js@2.119.2/supabase.js';
       s.onload = res; s.onerror = () => rej(new Error('Could not load Supabase')); document.head.appendChild(s);
     });
     const redirect = () => location.href.split('#')[0];
@@ -93,16 +96,19 @@
 
   // ---------- pick an adapter ----------
   async function config() {
-    const c = window.MS_CONFIG || {};
+    const w = window.MS_CONFIG || {};
+    const c = { SUPABASE_URL: w.SUPABASE_URL, SUPABASE_ANON_KEY: w.SUPABASE_PUBLISHABLE_KEY || w.SUPABASE_ANON_KEY };   // publishable (sb_publishable_…) preferred; legacy anon JWT still works
+    if (w.DEMO_MODE) return {};
     if (c.SUPABASE_URL && c.SUPABASE_ANON_KEY) return c;
     try { const j = await (await fetch('data/config.json', { cache: 'no-cache' })).json(); if (j.auth?.supabase_url && j.auth?.supabase_anon_key) return { SUPABASE_URL: j.auth.supabase_url, SUPABASE_ANON_KEY: j.auth.supabase_anon_key }; } catch (e) {}
     return {};
   }
-  let adapter = null, user = null; const listeners = [];
+  let adapter = null, user = null, CONF = {}; const listeners = [];
   const ready = (async () => {
-    const c = await config();
+    const c = CONF = await config();
+    document.documentElement.classList.toggle('ms-live', !!c.SUPABASE_URL);
     adapter = c.SUPABASE_URL ? SupabaseAdapter(c.SUPABASE_URL, c.SUPABASE_ANON_KEY) : DemoAdapter();
-    try { user = await adapter.init(); } catch (e) { console.warn('auth init failed, using demo mode', e); adapter = DemoAdapter(); user = await adapter.init(); }
+    try { user = await adapter.init(); } catch (e) { console.warn('auth init failed, falling back to demo mode', e); CONF = {}; document.documentElement.classList.remove('ms-live'); adapter = DemoAdapter(); user = await adapter.init(); }
     adapter.onAuthChange((u) => { const was = !!user; user = u; renderNav(); if (was !== !!u || u) listeners.forEach((f) => f(u)); });
     renderNav();
     return user;
@@ -210,6 +216,35 @@
         <div class="gate-btns"><button class="btn btn-primary btn-sm" data-auth="signup" data-reason="${reason}">Create free account</button><button class="btn btn-ghost btn-sm" data-auth="signin" data-reason="${reason}">Sign in</button></div></div></div></div>`;
   }
 
+  // ---------- Supabase REST inserts (waitlist, contact) ----------
+  const configured = () => !!(CONF.SUPABASE_URL && CONF.SUPABASE_ANON_KEY && adapter && adapter.mode === 'supabase');
+  async function insert(table, row) {
+    await ready;
+    if (!configured()) throw new Error('not-configured');
+    const r = await fetch(`${CONF.SUPABASE_URL.replace(/\/$/, '')}/rest/v1/${table}`, {
+      // publishable keys are not JWTs: send them on apikey only. Legacy anon JWTs also go on Authorization.
+      method: 'POST', headers: { apikey: CONF.SUPABASE_ANON_KEY, ...(CONF.SUPABASE_ANON_KEY.startsWith('eyJ') ? { Authorization: `Bearer ${CONF.SUPABASE_ANON_KEY}` } : {}), 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+      body: JSON.stringify(row) });
+    if (r.status === 409) return { duplicate: true };           // unique (email, plan): already on the list
+    if (!r.ok) { let m = ''; try { m = (await r.json()).message || ''; } catch (e) {} throw new Error(m || `Request failed (${r.status})`); }
+    return { ok: true };
+  }
+  // opts: { table, row: () => object|string (string = validation error), msg: element, ok: html, demo: html }
+  function wireForm(form, o) {
+    const pill = (c, t) => `<span class="pill ${c}">${t}</span> `;
+    const idle = () => { o.msg.innerHTML = configured() ? (o.idle || '') : pill('warn', 'Placeholder') + (o.demo || 'Demo mode: nothing is sent or stored.'); };
+    ready.then(idle); idle();
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const row = o.row(); if (typeof row === 'string') { o.msg.innerHTML = pill('neg', 'Check the form') + esc(row); return; }
+      if (!configured()) { o.msg.innerHTML = pill('warn', 'Demo mode') + 'This preview has no backend yet, so nothing was sent or stored.'; return; }
+      const btn = form.querySelector('[type=submit]'); btn && (btn.disabled = true); o.msg.innerHTML = '<span class="muted">Sending…</span>';
+      try { const r = await insert(o.table, row); o.msg.innerHTML = pill('pos', r.duplicate ? 'Already on the list' : 'Thanks!') + (r.duplicate ? 'You\'re already signed up.' : o.ok); form.reset(); }
+      catch (x) { o.msg.innerHTML = pill('neg', 'Not sent') + 'Something went wrong. Please try again in a minute.'; console.warn(o.table, x); }
+      btn && (btn.disabled = false);
+    });
+  }
+
   const api = {
     ready, get mode() { return adapter ? adapter.mode : 'demo'; },
     getUser: async () => { await ready; return adapter.getUser(); },
@@ -218,7 +253,7 @@
     signIn: async (e) => { await ready; return adapter.signIn(e); },
     signOut: async () => { await ready; await adapter.signOut(); toast('Signed out.'); },
     onAuthChange: (cb) => listeners.push(cb),
-    open, close, lock, renderNav, toast,
+    open, close, lock, renderNav, toast, configured, insert, wireForm, validEmail,
   };
   window.MSAuth = api;
 })();

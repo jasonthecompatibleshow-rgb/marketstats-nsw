@@ -1,0 +1,28 @@
+# Cloudflare Pages response headers. Rules are matched top to bottom and the values of a header matched by
+# several rules are joined, so later rules detach the default Cache-Control with "! Cache-Control" first.
+# (No Content-Security-Policy yet: MapLibre needs blob: workers and OpenFreeMap tiles/fonts; add one after launch testing.)
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(self), camera=(), microphone=(), payment=(), usb=(), interest-cohort=(), browsing-topics=()
+  Cache-Control: public, max-age=300, must-revalidate
+
+# Version-pinned third-party libraries and fonts never change at a given path.
+/vendor/*
+  ! Cache-Control
+  Cache-Control: public, max-age=31536000, immutable
+
+# Vector tiles read with HTTP Range requests by the PMTiles client; refreshed quarterly.
+/data/postcodes.pmtiles
+  ! Cache-Control
+  Cache-Control: public, max-age=86400
+  Accept-Ranges: bytes
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Headers: Range, If-Match
+  Access-Control-Expose-Headers: Content-Length, Content-Range, ETag
+
+/og.png
+  ! Cache-Control
+  Cache-Control: public, max-age=86400

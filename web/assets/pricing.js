@@ -11,11 +11,10 @@
     e.preventDefault(); $('wlPlan').textContent = a.dataset.plan;
     $('waitlist').scrollIntoView({ behavior: 'smooth' }); setTimeout(() => $('wlEmail').focus({ preventScroll: true }), 400);
   }));
-  $('wl').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const ok = /.+@.+\..+/.test($('wlEmail').value);
-    $('wlMsg').innerHTML = ok ? '<span class="pill pos">Thanks!</span> This is a placeholder. No backend yet, so nothing was sent or stored.' : '<span class="pill neg">Check the email</span> Enter a valid address.';
-  });
+  let plan = 'any';
+  document.querySelectorAll('a[data-plan]').forEach((a) => a.addEventListener('click', () => { plan = a.dataset.plan.toLowerCase(); }));
+  MSAuth.wireForm($('wl'), { table: 'waitlist', msg: $('wlMsg'), ok: 'You\'re on the waitlist. We\'ll email you when paid plans open.', idle: 'We\'ll only email you about paid plans launching. Unsubscribe any time.',
+    row: () => { const email = $('wlEmail').value.trim(); return MSAuth.validEmail(email) ? { email, plan } : 'Enter a valid email address.'; } });
   // Free card: once signed in, the call to action becomes "Open the map"
   const freeCta = () => { const el = document.querySelector('.free-cta'); if (!el || !window.MSAuth) return;
     el.innerHTML = MSAuth.isMember() ? '<a class="btn btn-primary" href="map.html" style="width:100%;justify-content:center">Open the map →</a><div class="small faint" style="text-align:center;margin-top:8px">You\'re a free member. Full data unlocked.</div>'

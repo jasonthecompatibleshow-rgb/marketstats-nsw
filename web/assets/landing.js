@@ -56,11 +56,8 @@ async function init() {
     <div class="card"><h3>Yield caveat</h3><p>Sales aren't split by bedrooms, so yields compare bedroom rents with all-bedroom prices: units and townhouses with strata sales, houses with non-strata. Treat yields as a way to compare areas, not as a valuation.</p></div>
     <div class="card"><h3>Not advice</h3><p>General information only, not financial, tax or investment advice. Your property, loan, costs and tax position will differ. Check with a licensed adviser. <a href="disclaimer.html">Read the disclaimer</a>.</p></div>`;
   $('foot').innerHTML = HM.footer(META, CFG);
-  $('wl').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const ok = /.+@.+\..+/.test($('wlEmail').value);
-    $('wlMsg').innerHTML = ok ? '<span class="pill pos">Thanks!</span> This is a placeholder. No backend yet, so nothing was sent or stored.' : '<span class="pill neg">Check the email</span> Enter a valid address.';
-  });
+  MSAuth.wireForm($('wl'), { table: 'waitlist', msg: $('wlMsg'), ok: 'We\'ll email you when alerts and watchlists launch.', idle: 'We\'ll only email you about the launch. Unsubscribe any time.',
+    row: () => { const email = $('wlEmail').value.trim(); return MSAuth.validEmail(email) ? { email, plan: 'investor' } : 'Enter a valid email address.'; } });
   miniMap();
   window.pageReady = true;
 }

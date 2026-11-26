@@ -6,6 +6,12 @@ class H(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *a, **k): super().__init__(*a, directory=ROOT, **k)
     def end_headers(self):
         self.send_header("Accept-Ranges", "bytes"); self.send_header("Cache-Control", "no-cache"); super().end_headers()
+    def send_error(self, code, message=None, explain=None):
+        nf = os.path.join(ROOT, "404.html")   # mimic Cloudflare/GitHub Pages: branded 404 page with a 404 status
+        if code != 404 or not os.path.isfile(nf): return super().send_error(code, message, explain)
+        body = open(nf, "rb").read()
+        self.send_response(404); self.send_header("Content-Type", "text/html; charset=utf-8"); self.send_header("Content-Length", str(len(body))); self.end_headers()
+        if self.command != "HEAD": self.wfile.write(body)
     def do_GET(self):
         rng = self.headers.get("Range"); path = self.translate_path(self.path)
         if not rng or not os.path.isfile(path): return super().do_GET()
