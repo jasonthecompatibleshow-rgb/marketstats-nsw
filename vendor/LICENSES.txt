@@ -1,0 +1,35 @@
+Third-party libraries bundled in web/vendor/ (self-hosted, pinned; no runtime CDN dependency).
+Each directory holds the library's own licence file. SHA-256 of each file as downloaded on 26 Nov 2026 (AEDT).
+
+MapLibre GL JS 4.7.1
+  Licence: BSD-3-Clause (vendor/maplibre-gl@4.7.1/LICENSE.txt)
+  Source: https://unpkg.com/maplibre-gl@4.7.1/dist/
+  maplibre-gl.js  sha256=f3249ae8cc3825fafd0d52b448269e42af183af783e51fd9351b92187e7c0380
+  maplibre-gl.css  sha256=576b085fdd9487a65a19215328c1e086c07ce5bf6da09b666b3806d3d008dae9
+  Note: sourceMappingURL comment removed from maplibre-gl.js; otherwise unmodified
+
+PMTiles (protomaps) 3.2.1
+  Licence: BSD-3-Clause (vendor/pmtiles@3.2.1/LICENSE)
+  Source: https://unpkg.com/pmtiles@3.2.1/dist/
+  pmtiles.js  sha256=367c19f8936d1d6c1b1820b0dee053f793fc29277655c3e471f5ed4d37b5f045
+
+uPlot 1.6.31
+  Licence: MIT (vendor/uplot@1.6.31/LICENSE)
+  Source: https://unpkg.com/uplot@1.6.31/dist/
+  uPlot.iife.min.js  sha256=2d27e8ad3d228164525ce213f9dc716f39b4e3aee0cc773fb3491c96cf4921a2
+  uPlot.min.css  sha256=df630c6a8d6f8eeaff264b50f73ce5b114f646ffd9a0bb74f049b0a00135fa04
+
+Supabase JS client (@supabase/supabase-js) 2.119.2
+  Licence: MIT (vendor/supabase-js@2.119.2/LICENSE)
+  Source: https://unpkg.com/@supabase/supabase-js@2.119.2/dist/umd/
+  supabase.js  sha256=8816af04d9915dbba1882d6f84f0b402dc40268063a63d9c66d24f52f371c263
+  Note: Loaded only when Supabase is configured in config.js
+
+Inter typeface 4.1
+  Licence: SIL Open Font License 1.1 (vendor/inter@4.1/LICENSE.txt)
+  Source: https://rsms.me/inter/font-files/
+  InterVariable.woff2  sha256=693b77d4f32ee9b8bfc995589b5fad5e99adf2832738661f5402f9978429a8e3
+  InterVariable-Italic.woff2  sha256=e564f652916db6c139570fefb9524a77c4d48f30c92928de9db19b6b5c7a262a
+  Note: inter.css written by MarketStats
+
+Not bundled (runtime services, required for the basemap): OpenFreeMap tiles and styles, https://openfreemap.org/ (MIT; map data © OpenStreetMap contributors, ODbL; © OpenMapTiles).

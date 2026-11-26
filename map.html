@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!--head:start-->
+<script>(function(){var t;try{t=localStorage.getItem('ms-theme')}catch(e){}document.documentElement.dataset.theme=t||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')})()</script>
+<title>Map · MarketStats NSW</title>
+<meta name="description" content="Interactive NSW postcode map of rents, yields, prices, gearing and trends from official NSW Government data.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0b0f19" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:site_name" content="MarketStats"><meta property="og:type" content="website"><meta property="og:title" content="Map · MarketStats NSW"><meta property="og:description" content="Interactive NSW postcode map of rents, yields, prices, gearing and trends from official NSW Government data."><meta property="og:image" content="https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/map"><meta property="og:url" content="https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/map">
+<!--head:end-->
+<link rel="stylesheet" href="vendor/inter@4.1/inter.css">
+<link rel="stylesheet" href="vendor/maplibre-gl@4.7.1/maplibre-gl.css">
+<link rel="stylesheet" href="vendor/uplot@1.6.31/uPlot.min.css">
+<link rel="stylesheet" href="assets/site.css"><link rel="stylesheet" href="assets/map.css">
+<script src="vendor/maplibre-gl@4.7.1/maplibre-gl.js"></script>
+<script src="vendor/pmtiles@3.2.1/pmtiles.js"></script>
+<script src="vendor/uplot@1.6.31/uPlot.iife.min.js"></script>
+</head>
+<body class="map-page">
+<header class="nav floating" id="nav"></header>
+<div id="map"></div>
+
+<aside id="controls" class="glass">
+  <div class="search">
+    <span class="search-ico">⌕</span>
+    <input id="q" class="input" placeholder="Search suburb or postcode" autocomplete="off" aria-label="Search suburb or postcode">
+    <ul id="results" role="listbox"></ul>
+  </div>
+  <button id="filtersToggle" class="btn btn-ghost btn-sm mobile-only">Filters ▾</button>
+  <div id="filters">
+    <div class="ctl-label">Metric</div>
+    <div class="seg metric-seg" id="metric">
+      <button data-v="rent">Rent</button><button data-v="yield">Yield</button><button data-v="cash">Cash flow</button><button data-v="gearing">Gearing</button>
+      <button data-v="price">Price</button><button data-v="growth">Rent Δ 1y</button><button data-v="growth5">Rent Δ 5y</button><button data-v="income">Income</button>
+    </div>
+    <div class="ctl-label">Dwelling</div>
+    <div class="seg" id="dwelling"><button data-v="A">All</button><button data-v="U">Unit</button><button data-v="H">House</button><button data-v="T">Townhouse</button></div>
+    <div class="ctl-label">Bedrooms</div>
+    <div class="seg" id="beds"><button data-v="t">All</button><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4+</button></div>
+    <div id="timeBox">
+      <div class="ctl-label">Time <span id="tLabel" class="pill acc num"></span></div>
+      <div class="time-row"><button id="play" class="icon-btn" aria-label="Play">▶</button><input type="range" id="time" min="0" max="0" value="0" aria-label="Quarter"></div>
+      <button class="time-lock" id="timeLock" data-auth="signup" data-reason="Create a free account to scroll back through 9 years of quarterly history (2017–2026)." hidden>Free account unlocks 2017–2026 history →</button>
+    </div>
+    <div id="note" class="note"></div>
+  </div>
+  <div id="legend"></div>
+</aside>
+
+<aside id="panel" class="glass hidden" aria-live="polite">
+  <div class="handle" id="handle"><span></span></div>
+  <div id="panelBody"></div>
+</aside>
+<div id="tip" class="glass hidden"></div>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="assets/common.js"></script>
+<script src="assets/map.js"></script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<!--head:start-->
+<script>(function(){var t;try{t=localStorage.getItem('ms-theme')}catch(e){}document.documentElement.dataset.theme=t||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')})()</script>
+<title>About · MarketStats NSW</title>
+<meta name="description" content="What MarketStats is, who it&#x27;s for, the official public data it&#x27;s built on, and how often it updates.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0b0f19" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:site_name" content="MarketStats"><meta property="og:type" content="website"><meta property="og:title" content="About · MarketStats NSW"><meta property="og:description" content="What MarketStats is, who it&#x27;s for, the official public data it&#x27;s built on, and how often it updates."><meta property="og:image" content="https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/about"><meta property="og:url" content="https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/about">
+<!--head:end-->
+<link rel="stylesheet" href="vendor/inter@4.1/inter.css">
+<link rel="stylesheet" href="assets/site.css"><link rel="stylesheet" href="assets/pages.css">
+</head>
+<body data-page="about">
+<header class="nav" id="nav"></header>
+<main class="wrap">
+  <section class="page-head"><div class="eyebrow">About</div><h1>Property numbers you can check</h1>
+    <p class="muted lead">MarketStats is a free analytics site for the NSW property market. It turns official public datasets into clear rent, price, yield, gearing and trend analysis for every postcode.</p></section>
+  <article class="doc">
+    <h2>What MarketStats is</h2>
+    <p>Most property heatmaps show one number per suburb and stop there. MarketStats shows <strong>median weekly rent by dwelling type and bedrooms</strong>, <strong>median sale prices</strong>, <strong>gross rental yield</strong>, a <strong>typical investor's cash flow and gearing</strong> at today's average investor interest rate, and <strong><span data-k="n_quarters">nine years</span> of quarterly trends</strong> for <span data-k="postcodes">every</span> NSW postcode with enough data. You can open any postcode, compare it over time, and test a purchase with your own loan, costs and tax rate.</p>
+    <p>MarketStats currently covers <strong>New South Wales</strong>. Other states will follow where equivalent open data exists.</p>
+
+    <h2>Who it's for</h2>
+    <div class="card"><h3 style="margin-top:0">Investors</h3><p>Compare yields and estimated cash flow across postcodes, see where rents are rising fastest, and check whether a typical purchase would be positively or negatively geared at the current rate.</p></div>
+    <div class="card"><h3 style="margin-top:0">Buyers</h3><p>See median prices for strata and non-strata homes, how many sales there were, and how prices have moved since 2017.</p></div>
+    <div class="card"><h3 style="margin-top:0">Renters</h3><p>Find out what a 1, 2, 3 or 4+ bedroom home actually rents for in a postcode this quarter, and how fast rents are changing.</p></div>
+
+    <h2>Built on official public data</h2>
+    <p>Every number on MarketStats comes from an official public dataset that is published under an open licence allowing commercial reuse, or is calculated from one using a method we publish:</p>
+    <ul>
+      <li><strong>NSW Department of Communities and Justice</strong>: Rent and Sales Report (rental bonds and property sales by postcode).</li>
+      <li><strong>Australian Bureau of Statistics</strong>: postcode, suburb and SA2 boundaries, and 2021 Census data.</li>
+      <li><strong>Reserve Bank of Australia</strong>: average interest rate on new investor home loans (Table F6).</li>
+      <li><strong>Australian Prudential Regulation Authority</strong>: share of new loans by loan-to-value ratio, used to pick a typical deposit.</li>
+      <li><strong>Australian Institute of Health and Welfare</strong>: NSW housing assistance indicators such as rental stress among Rent Assistance recipients and the social housing waitlist.</li>
+    </ul>
+    <p>We never fill gaps with estimates or scraped listings. Where a source suppresses or flags small samples, we hide or fade those areas. See <a href="data.html">Data &amp; method</a> for every source, its licence and how each figure is calculated.</p>
+
+    <h2>How often it updates</h2>
+    <p>The DCJ Rent and Sales Report is published <strong>quarterly</strong>, about one to two quarters after the period it covers. MarketStats rebuilds when a new report comes out, and refreshes the RBA interest rate each month. AIHW housing assistance figures are <strong>annual</strong>, at 30 June. Current data: rents for the <span data-k="rent_period">latest quarter</span>, sales for the <span data-k="sales_period">latest quarter</span>, interest rate as at <span data-k="rate_date">the latest month</span>. Last built <span data-k="built">recently</span>.</p>
+
+    <h2>Independent</h2>
+    <p>MarketStats is independent. It is not affiliated with, sponsored by or endorsed by the NSW Government, the Australian Government or any agency whose data it uses. It does not sell property, loans or advice, and it is general information only. Please read the <a href="disclaimer.html">disclaimer</a>.</p>
+
+    <h2 id="contact">Contact &amp; feedback</h2>
+    <p>Spotted a number that looks wrong, or want a feature? Send us a note. Data corrections are best sent to the original publisher too, linked on the <a href="data.html#sources">Data sources</a> page.</p>
+    <form class="card contact-form" id="contactForm" novalidate>
+      <div class="cf-row"><label class="field">Name<input class="input" id="cfName" maxlength="100" autocomplete="name" required></label>
+      <label class="field">Email<input class="input" id="cfEmail" type="email" maxlength="254" autocomplete="email" required></label></div>
+      <label class="field">Message<textarea class="input" id="cfMsg" rows="5" maxlength="4000" required></textarea></label>
+      <div class="cf-foot"><button class="btn btn-primary" type="submit">Send message</button><div class="small faint" id="cfOut"></div></div>
+      <p class="small faint" style="margin:0">We'll use your details only to reply. See our <a href="privacy.html">privacy policy</a>.</p>
+    </form>
+  </article>
+</main>
+<footer class="footer"><div class="wrap" id="foot"></div></footer>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="assets/common.js"></script>
+<script src="assets/info.js"></script>
+<script src="assets/contact.js"></script>
+</body>
+</html>

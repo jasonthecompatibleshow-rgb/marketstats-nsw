@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<!--head:start-->
+<script>(function(){var t;try{t=localStorage.getItem('ms-theme')}catch(e){}document.documentElement.dataset.theme=t||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')})()</script>
+<title>Data sources &amp; methodology · MarketStats NSW</title>
+<meta name="description" content="Every dataset MarketStats uses, its licence and attribution, and how rents, yields, trends and gearing are calculated.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0b0f19" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:site_name" content="MarketStats"><meta property="og:type" content="website"><meta property="og:title" content="Data sources &amp; methodology · MarketStats NSW"><meta property="og:description" content="Every dataset MarketStats uses, its licence and attribution, and how rents, yields, trends and gearing are calculated."><meta property="og:image" content="https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/data"><meta property="og:url" content="https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/data">
+<!--head:end-->
+<link rel="stylesheet" href="vendor/inter@4.1/inter.css">
+<link rel="stylesheet" href="assets/site.css"><link rel="stylesheet" href="assets/pages.css">
+</head>
+<body data-page="data">
+<header class="nav" id="nav"></header>
+<main class="wrap">
+  <section class="page-head"><div class="eyebrow">Data sources &amp; methodology</div><h1>Where every number comes from</h1>
+    <p class="muted lead">MarketStats only uses official datasets whose licences allow commercial reuse, and it publishes how each figure is calculated. Current build: rents <span data-k="rent_period">–</span>, sales <span data-k="sales_period">–</span>, rate <span data-k="rate">–</span> (<span data-k="rate_date">–</span>).</p></section>
+  <article class="doc" style="max-width:1000px">
+    <div class="toc"><a href="#sources">Sources &amp; attribution</a><a href="#aihw">AIHW indicators</a><a href="#excluded">What we don't use</a><a href="#rents">Rents &amp; prices</a><a href="#trends">Trends</a><a href="#yield">Yield</a><a href="#gearing">Gearing</a><a href="#geo">Geography</a></div>
+
+    <h2 id="sources">Sources, licences and attribution</h2>
+    <div class="card scroll-x" style="padding:6px 10px"><table class="t src-table">
+      <tr><th>Source</th><th>What we use</th><th>Geography</th><th>Licence</th><th>Attribution</th></tr>
+      <tr><td><b>NSW Department of Communities and Justice</b><br><a href="https://dcj.nsw.gov.au/about-us/families-and-communities-statistics/housing-rent-and-sales/rent-and-sales-report.html" target="_blank" rel="noopener">Rent and Sales Report</a> (quarterly, all issues since Sep 2017)</td>
+        <td>Median weekly rent and new bonds lodged by dwelling type and bedrooms; median sale price and number of sales (all, strata, non-strata); bonds held</td><td>Postcode</td>
+        <td><a href="https://dcj.nsw.gov.au/statements/copyright-and-disclaimer.html" target="_blank" rel="noopener">CC BY 4.0</a></td><td>© State of New South Wales (Department of Communities and Justice), Rent and Sales Report. Modified (aggregated, ratios calculated).</td></tr>
+      <tr><td><b>Australian Bureau of Statistics</b><br><a href="https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/digital-boundary-files" target="_blank" rel="noopener">ASGS Edition 3 boundaries</a> and <a href="https://www.abs.gov.au/census/find-census-data/datapacks" target="_blank" rel="noopener">2021 Census DataPacks</a></td>
+        <td>Postal Areas (POA), Suburbs and Localities (SAL) and SA2 boundaries; Census General Community Profile (population, age, income, rent paid, household size)</td><td>POA, SAL, SA2</td>
+        <td><a href="https://www.abs.gov.au/website-privacy-copyright-and-disclaimer" target="_blank" rel="noopener">CC BY 4.0</a></td><td>Source: Australian Bureau of Statistics. Boundaries simplified for web maps.</td></tr>
+      <tr><td><b>Reserve Bank of Australia</b><br><a href="https://www.rba.gov.au/statistics/tables/#interest-rates" target="_blank" rel="noopener">Table F6 Housing Lending Rates</a> (monthly)</td>
+        <td>Average variable rate on new investor housing loans funded (series FLRHIFVA), used as the default interest rate</td><td>National</td>
+        <td><a href="https://www.rba.gov.au/copyright/" target="_blank" rel="noopener">CC BY 4.0</a></td><td>Source: Reserve Bank of Australia.</td></tr>
+      <tr><td><b>Australian Prudential Regulation Authority</b><br><a href="https://www.apra.gov.au/quarterly-authorised-deposit-taking-institution-property-exposure-statistics-june-2026-highlights" target="_blank" rel="noopener">Quarterly ADI Property Exposures, June 2026</a></td>
+        <td>One published figure (share of new loans at 80%+ LVR) cited to justify the default 80% LVR</td><td>National</td>
+        <td><a href="https://www.apra.gov.au/copyright" target="_blank" rel="noopener">CC BY 4.0</a></td><td>© Australian Prudential Regulation Authority.</td></tr>
+      <tr><td><b>Australian Institute of Health and Welfare</b><br><a href="https://www.aihw.gov.au/reports/housing-assistance/housing-assistance-in-australia-2026/data" target="_blank" rel="noopener">Housing assistance in Australia 2026</a>, data tables (released 23 June 2026; households tables reissued 30 June 2026)</td>
+        <td>Rent Assistance rental stress and recipients (tables CRA.9, CRA.2b); social housing share of households (SOCIALSHARE.1); public housing waitlist (HOUSEHOLDS.28); social housing dwellings (DWELLINGS.2)</td><td>NSW state, Australia, SA2 (CRA.2b only)</td>
+        <td><a href="https://www.aihw.gov.au/copyright" target="_blank" rel="noopener">CC BY 4.0</a></td><td>Based on Australian Institute of Health and Welfare material. Rent Assistance tables: AIHW analysis of Department of Social Services data. SOCIALSHARE.1: based on Australian Institute of Health and Welfare; Australian Bureau of Statistics material.</td></tr>
+      <tr><td><b>Land tax parameters</b><br><a href="https://www.revenue.nsw.gov.au/taxes-duties-levies-royalties/land-tax" target="_blank" rel="noopener">Revenue NSW: land tax</a></td>
+        <td>Only the published general threshold (<span data-k="lt_threshold">–</span>) and rate, entered as calculator inputs. No Revenue NSW content is reproduced.</td><td>NSW</td>
+        <td><a href="https://www.revenue.nsw.gov.au/terms" target="_blank" rel="noopener">Revenue NSW terms</a> (website material is not CC licensed)</td><td>Linked for reference only.</td></tr>
+      <tr><td><b>Basemap</b><br><a href="https://openfreemap.org/" target="_blank" rel="noopener">OpenFreeMap</a> (Positron and Dark styles)</td>
+        <td>Background map tiles and labels</td><td>–</td>
+        <td>OpenFreeMap: MIT, commercial use allowed. Map data: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap, ODbL</a>; schema: OpenMapTiles</td><td>OpenFreeMap © OpenMapTiles © OpenStreetMap contributors (shown on every map).</td></tr>
+    </table></div>
+    <p class="small">Licences were checked on each publisher's official copyright page. Logos, coats of arms and trademarks of these organisations are excluded from their licences and are not used on MarketStats. Using this data does not imply that any publisher endorses MarketStats.</p>
+
+    <h2 id="aihw">AIHW housing indicators</h2>
+    <p>The AIHW publishes most housing assistance data for <strong>states and territories</strong>, not postcodes. MarketStats shows these as <strong>NSW state-level context</strong> and always labels the geography. They are never shown as if they were postcode figures.</p>
+    <div class="ctx-grid" id="aihwCtx"></div>
+    <p class="ctx-note" id="aihwNote"></p>
+    <ul>
+      <li><strong>Rental stress</strong> (CRA.9): share of income units receiving Commonwealth Rent Assistance who still pay more than 30% of gross income on rent, at the last Friday in June.</li>
+      <li><strong>Rent Assistance by SA2</strong> (CRA.2b): number of recipient income units in each ABS SA2 area at June 2023, 2024 and 2025. On the map, a postcode's panel lists the SA2 areas that overlap it (with the share of the postcode's area each covers). These are <strong>SA2 figures, not postcode figures</strong>: SA2 and postcode boundaries don't line up, so we don't split or add them.</li>
+      <li><strong>Social housing share</strong> (SOCIALSHARE.1): social housing households ÷ all households, calculated by MarketStats from the two counts AIHW publishes.</li>
+      <li><strong>Public housing waitlist</strong> (HOUSEHOLDS.28) and <strong>social housing dwellings</strong> (DWELLINGS.2), both from the AIHW National Housing Assistance Data Repository.</li>
+      <li>AIHW rounds Rent Assistance counts to the nearest 5. Figures update once a year, usually mid-year.</li>
+    </ul>
+
+    <h2 id="excluded">What we don't use, and why</h2>
+    <ul>
+      <li><strong>Cotality (formerly CoreLogic) home value and rent indices</strong> shown on the Australian Government's <a href="https://www.housingdata.gov.au/" target="_blank" rel="noopener">Housing Data Dashboard</a>. These are third-party data licensed to government and excluded from the dashboard's Creative Commons licence. Cotality's terms don't allow commercial reuse or redistribution.</li>
+      <li><strong>AIHW table HOUSEHOLDS.26</strong> (consolidated social housing waitlists). Its stated source is "state and territory supplied data" rather than an AIHW collection. To stay on the safe side of AIHW's third-party exclusion, we leave it out and use the AIHW-collected public housing waitlist (HOUSEHOLDS.28) instead.</li>
+      <li><strong>AIHW logos, the Commonwealth Coat of Arms and any material marked as third-party</strong>, which AIHW's licence excludes.</li>
+      <li><strong>Listings, asking rents and automated valuations</strong> from property portals. Their terms don't allow it, so MarketStats doesn't scrape them.</li>
+    </ul>
+
+    <h2 id="rents">Rents and prices</h2>
+    <p>Rents are DCJ's median weekly rent for <strong>new bonds lodged</strong> in the quarter, by postcode, dwelling type (all, house, unit/flat, townhouse) and bedrooms. Prices are DCJ's median sale price by postcode for all, strata and non-strata dwellings, by contract date. We read the published medians directly and do not re-calculate them. Results DCJ suppresses (10 or fewer) are shown as no data. Results DCJ flags as 11–30 are faded and marked *.</p>
+
+    <h2 id="trends">Trends and top movers</h2>
+    <p>We parse every quarterly DCJ issue from <span data-k="first_q">Sep 2017</span> to <span data-k="last_q">the latest</span> (<span data-k="n_quarters">–</span> quarters). Earlier issues used a different method and aren't comparable. Each series is lightly cleaned: a point more than 2.5× or less than 0.4× the median of the four quarters either side is treated as an error and dropped. 12-month and 5-year changes compare the same quarter in each year. Insights rankings only include postcodes that pass the chosen minimum sample in <strong>every</strong> quarter compared.</p>
+
+    <h2 id="yield">Gross yield</h2>
+    <p>Gross yield = median weekly rent × 52 ÷ median sale price. DCJ doesn't split sales by bedrooms, so units and townhouses are compared with strata sales, houses with non-strata sales, and "all" with all sales. Historical yields use the rent and price from the same quarter.</p>
+
+    <h2 id="gearing">Typical-investor gearing and cash flow</h2>
+    <p>For each postcode and dwelling type we model a typical purchase at the median price with a <span data-k="lvr">80%</span> LVR loan at the RBA rate (<span data-k="rate">–</span>), P&amp;I over <span data-k="term">30</span> years. We subtract <span data-k="vac">2</span> weeks' vacancy, <span data-k="mgmt">7%</span> management, <span data-k="maint">5%</span> maintenance and allowances for strata, council, water and insurance.</p>
+    <ul>
+      <li><strong>Rental tax result</strong> = rent received − running costs − first-year interest. Above +<span data-k="band">$20</span>/wk is positively geared; below −<span data-k="band">$20</span>/wk is negatively geared; in between is neutral.</li>
+      <li><strong>Pre-tax cash flow</strong> = rent received − running costs − total repayments (interest and principal).</li>
+      <li><strong>Break-even rate</strong> = the interest rate at which the rental tax result would be exactly zero, holding everything else fixed.</li>
+      <li>The gearing map colours postcodes by how far the weekly tax result is above or below zero, so you can see how deeply negative each area is.</li>
+    </ul>
+    <p>Every assumption can be changed in the calculator on the map. See the <a href="disclaimer.html#gearing">disclaimer</a> for limits.</p>
+
+    <h2 id="geo">Geography</h2>
+    <p>Postcodes are ABS 2021 Postal Areas, matched to DCJ postcodes. Suburb names are 2021 Suburbs and Localities that overlap each postcode by at least a small share of their area, ordered by Census population. SA2 overlaps for AIHW data use the same boundary files, projected to equal-area (EPSG:3577), and list SA2s covering at least 5% of the postcode.</p>
+  </article>
+</main>
+<footer class="footer"><div class="wrap" id="foot"></div></footer>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="assets/common.js"></script>
+<script src="assets/info.js"></script>
+</body>
+</html>

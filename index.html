@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<!--head:start-->
+<script>(function(){var t;try{t=localStorage.getItem('ms-theme')}catch(e){}document.documentElement.dataset.theme=t||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')})()</script>
+<title>MarketStats NSW · Rent, yield &amp; gearing for every NSW postcode</title>
+<meta name="description" content="Free NSW property analytics: rents by bedroom, gross yields, gearing and nine years of trends for every postcode, from official public data.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0b0f19" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:site_name" content="MarketStats"><meta property="og:type" content="website"><meta property="og:title" content="MarketStats NSW · Rent, yield &amp; gearing for every NSW postcode"><meta property="og:description" content="Free NSW property analytics: rents by bedroom, gross yields, gearing and nine years of trends for every postcode, from official public data."><meta property="og:image" content="https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/"><meta property="og:url" content="https://jasonthecompatibleshow-rgb.github.io/marketstats-nsw/">
+<!--head:end-->
+<link rel="stylesheet" href="vendor/inter@4.1/inter.css">
+<link rel="stylesheet" href="vendor/maplibre-gl@4.7.1/maplibre-gl.css">
+<link rel="stylesheet" href="assets/site.css"><link rel="stylesheet" href="assets/pages.css"><link rel="stylesheet" href="assets/landing.css">
+<script src="vendor/maplibre-gl@4.7.1/maplibre-gl.js"></script>
+<script src="vendor/pmtiles@3.2.1/pmtiles.js"></script>
+</head>
+<body>
+<header class="nav" id="nav"></header>
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <span class="pill acc">Free · Official NSW Government data · Updated quarterly</span>
+      <h1>Know what a NSW property <span class="grad">really earns</span> before you buy.</h1>
+      <p class="lead">Rent by bedroom, gross yield, cash flow and gearing for every NSW postcode, plus nine years of rent and price trends. Built for investors, and just as useful for buyers and renters.</p>
+      <div class="cta-row"><a class="btn btn-primary" href="map.html">Open the map →</a><a class="btn btn-ghost" href="insights.html">See top movers</a></div>
+      <div class="hero-stats" id="heroStats"></div>
+    </div>
+    <div class="hero-visual card">
+      <div id="miniMap"></div>
+      <div class="mini-legend glass"><b>Gross yield · units</b><div class="lg-bar" id="miniBar"></div><div class="lg-labels" id="miniLab"></div></div>
+      <a class="mini-cta glass" href="map.html?m=yield&d=U&b=t">Explore yields →</a>
+    </div>
+  </div>
+</section>
+
+<main class="wrap">
+  <section class="section">
+    <div class="eyebrow">Live from the latest data</div>
+    <h2 class="h2">This quarter's standouts</h2>
+    <p class="muted" id="standSub"></p>
+    <div class="grid3" id="previews"></div>
+    <div style="margin-top:18px"><a class="btn btn-ghost" href="insights.html">All insights &amp; filters →</a></div>
+  </section>
+
+  <section class="section">
+    <div class="eyebrow">What you get</div>
+    <h2 class="h2">Investor-grade numbers, free</h2>
+    <div class="features">
+      <div class="feature card"><div class="f-ico">🏷️</div><h3>Rent by bedroom</h3><p>Median weekly rent for units, houses and townhouses, 1 to 4+ bedrooms, from every new NSW rental bond.</p></div>
+      <div class="feature card"><div class="f-ico">📈</div><h3>Yield &amp; gearing</h3><p>Gross yield and a typical investor's weekly cash flow at today's RBA rate, so you can see positively and negatively geared areas at a glance.</p></div>
+      <div class="feature card"><div class="f-ico">🧮</div><h3>Your own numbers</h3><p>Change the loan, LVR, rate, term, P&amp;I or interest-only, and every cost, with an after-tax estimate at your marginal rate.</p></div>
+      <div class="feature card"><div class="f-ico">⏱️</div><h3>Nine years of trends</h3><p>Quarterly rent, price and yield charts back to 2017, a map time slider, and 1- and 5-year top movers.</p></div>
+    </div>
+  </section>
+
+  <section class="section audiences">
+    <div class="aud card"><span class="pill acc">Investors</span><h3>Find cash flow, not just growth</h3><p>Compare yields and gearing across postcodes, then test a deal with your own loan and costs.</p><a href="map.html?m=gearing&d=U&b=2">Gearing map →</a></div>
+    <div class="aud card"><span class="pill pos">Buyers</span><h3>See where prices are heading</h3><p>Median strata and house prices, sales volumes and nine years of price history for every postcode.</p><a href="map.html?m=price&d=H&b=t">Price map →</a></div>
+    <div class="aud card"><span class="pill warn">Renters</span><h3>Know a fair rent</h3><p>What a 1, 2 or 3-bed actually rents for in your suburb this quarter, and how fast it's rising.</p><a href="map.html?m=rent&d=U&b=2">Rent map →</a></div>
+  </section>
+
+  <section class="section waitlist card" id="waitlist">
+    <div><div class="eyebrow">Coming soon</div><h2 class="h2">Alerts, watchlists &amp; quarterly reports</h2>
+      <p class="muted">Get an email when new quarterly data drops, plus alerts when your suburbs' rents or yields move.</p></div>
+    <form id="wl" class="wl-form" novalidate>
+      <input class="input" type="email" id="wlEmail" placeholder="you@example.com" aria-label="Email" required>
+      <button class="btn btn-primary" type="submit">Join the waitlist</button>
+      <div class="small faint" id="wlMsg"></div>
+    </form>
+  </section>
+
+  <section class="section" id="context">
+    <div class="eyebrow">NSW housing context · AIHW</div>
+    <h2 class="h2">The bigger picture, state-wide</h2>
+    <p class="muted">Annual housing assistance indicators for New South Wales as a whole. These are state-level figures, not postcode figures.</p>
+    <div class="ctx-grid" id="aihwCtx"></div>
+    <p class="ctx-note" id="aihwNote"></p>
+  </section>
+
+  <section class="section" id="how">
+    <div class="eyebrow">Method &amp; sources</div>
+    <h2 class="h2">Transparent by design</h2>
+    <div class="method" id="method"></div>
+    <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-ghost" href="data.html">Full data sources &amp; method →</a><a class="btn btn-ghost" href="disclaimer.html">Disclaimer</a></div>
+  </section>
+</main>
+<footer class="footer"><div class="wrap" id="foot"></div></footer>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="assets/common.js"></script>
+<script src="assets/landing.js"></script>
+</body>
+</html>
